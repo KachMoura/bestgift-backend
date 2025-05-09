@@ -16,5 +16,5 @@ app.use("/api", suggestionRoutes);
 
 // Démarrage du serveur
 app.listen(PORT, () => {
-  console.log(`Serveur EasyGift lancé sur http://localhost:${PORT}`);
+  console.log(`Serveur EasyGift lancé sur le port ${PORT}`);
 });
