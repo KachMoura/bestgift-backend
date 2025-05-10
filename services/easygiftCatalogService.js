@@ -30,6 +30,13 @@ function normalizeGender(value) {
   return v;
 }
 
+// Nettoyage du champ tags (tableau ou string)
+function parseTags(tags) {
+  if (Array.isArray(tags)) return tags.map(t => t.toLowerCase());
+  if (typeof tags === "string") return tags.split(',').map(t => t.trim().toLowerCase());
+  return [];
+}
+
 // Application des règles de filtrage et de scoring
 function applyEasyGiftBusinessRules(products, data) {
   const budget = data.budget || 99999;
@@ -43,7 +50,7 @@ function applyEasyGiftBusinessRules(products, data) {
   return products
     .filter(product => {
       const title = (product.title || "").toLowerCase();
-      const tags = (product.tags || []).map(t => t.toLowerCase());
+      const tags = parseTags(product.tags);
       const productGender = normalizeGender(product.gender || "");
       const price = parseFloat(product.price) || 0;
 
@@ -57,7 +64,6 @@ function applyEasyGiftBusinessRules(products, data) {
       if (!matchesBudget) reasons.push(`hors budget (${price} €)`);
       if (!notExcluded) reasons.push("exclu");
       if (!matchesGender) reasons.push(`genre incompatible (${productGender} ≠ ${gender})`);
-
       if (reasons.length > 0) {
         console.log(`>>> [Écarté] ${product.title} → ${reasons.join(", ")}`);
       }
@@ -66,9 +72,10 @@ function applyEasyGiftBusinessRules(products, data) {
     })
     .map(product => {
       let matchingScore = scoringConfig.BASE_SCORE;
+
       const title = (product.title || "").toLowerCase();
       const description = (product.description || "").toLowerCase();
-      const tags = (product.tags || []).map(t => t.toLowerCase()).join(" ");
+      const tags = parseTags(product.tags).join(" ");
       const fullText = `${title} ${description} ${tags}`;
 
       const rating = parseFloat(product.rating) || 0;
