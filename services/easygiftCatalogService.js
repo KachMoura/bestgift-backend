@@ -64,6 +64,7 @@ function applyEasyGiftBusinessRules(products, data) {
       if (!matchesBudget) reasons.push(`hors budget (${price} €)`);
       if (!notExcluded) reasons.push("exclu");
       if (!matchesGender) reasons.push(`genre incompatible (${productGender} ≠ ${gender})`);
+
       if (reasons.length > 0) {
         console.log(`>>> [Écarté] ${product.title} → ${reasons.join(", ")}`);
       }
@@ -72,27 +73,30 @@ function applyEasyGiftBusinessRules(products, data) {
     })
     .map(product => {
       let matchingScore = scoringConfig.BASE_SCORE;
-
       const title = (product.title || "").toLowerCase();
       const description = (product.description || "").toLowerCase();
       const tags = parseTags(product.tags).join(" ");
       const fullText = `${title} ${description} ${tags}`;
 
+      // Bonus note
       const rating = parseFloat(product.rating) || 0;
       if (rating >= 4) {
         matchingScore += scoringConfig.RATING_BONUS;
-        console.log(`>>> [Note] +${scoringConfig.RATING_BONUS}% pour note ${rating}`);
+        console.log(`>>> [Note] ${product.title} : +${scoringConfig.RATING_BONUS}% (note ${rating})`);
       }
 
+      // Bonus mots-clés profil
       const profileKeywords = ADVANCED_KEYWORDS[interest] || [];
       const hits = profileKeywords.filter(k => fullText.includes(k));
       if (hits.length > 0) {
         console.log(`>>> [Mots-clés] ${product.title} → ${hits.length} trouvés : ${hits.join(', ')}`);
         if (hits.length >= 5) {
           matchingScore += scoringConfig.ADVANCED_MATCH_BONUS;
+          console.log(`>>> [Profil Avancé] ${product.title} : +${scoringConfig.ADVANCED_MATCH_BONUS}% (≥ 5 mots-clés)`);
         }
       }
 
+      // Bonus livraison rapide
       const isFast =
         (product.delivery_days_national && product.delivery_days_national < 3) ||
         (product.delivery_days_international && product.delivery_days_international < 7);
@@ -100,14 +104,18 @@ function applyEasyGiftBusinessRules(products, data) {
         let bonus = scoringConfig.FAST_DELIVERY_BONUS;
         if (preferences.includes("fast_delivery")) bonus += scoringConfig.PREFERENCE_EXTRA_BONUS;
         matchingScore += bonus;
+        console.log(`>>> [Livraison] ${product.title} : +${bonus}% (rapide${preferences.includes("fast_delivery") ? " + préférée" : ""})`);
       }
 
+      // Bonus promotion
       if (product.is_promo === true) {
         let bonus = scoringConfig.PROMO_BONUS;
         if (preferences.includes("promo")) bonus += scoringConfig.PREFERENCE_EXTRA_BONUS;
         matchingScore += bonus;
+        console.log(`>>> [Promo] ${product.title} : +${bonus}% (promo${preferences.includes("promo") ? " + préférée" : ""})`);
       }
 
+      // Bonus compacité
       const weight = parseFloat(product.product_weight_kg) || 0;
       const height = product.product_height_cm || 0;
       const width = product.product_width_cm || 0;
@@ -117,7 +125,11 @@ function applyEasyGiftBusinessRules(products, data) {
         let bonus = scoringConfig.UNIVERSAL_SIZE_BONUS;
         if (preferences.includes("compact")) bonus += scoringConfig.PREFERENCE_EXTRA_BONUS;
         matchingScore += bonus;
+        console.log(`>>> [Compact] ${product.title} : +${bonus}% (taille réduite${preferences.includes("compact") ? " + préférée" : ""})`);
       }
+
+      // Affichage final
+      console.log(`>>> [Score Final] ${product.title} : ${matchingScore}%`);
 
       return { ...product, matchingScore };
     });
