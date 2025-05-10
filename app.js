@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 // Importation des routes
@@ -16,5 +17,5 @@ app.use("/api", suggestionRoutes);
 
 // Démarrage du serveur
 app.listen(PORT, () => {
-  console.log(`Serveur EasyGift lancé sur le port ${PORT}`);
+  console.log(`Serveur EasyGift lancé sur http://localhost:${PORT}`);
 });
