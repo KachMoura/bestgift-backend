@@ -4,9 +4,9 @@ const scoringConfig = require('../data/scoringConfig');
 const ADVANCED_KEYWORDS = require('../data/advancedProfileKeywords');
 const { matchGenderAge } = require('../data/genderRules');
 
-// Mots-clés avancés par profil pour recherche multi-appel
+// Mots-clés avancés par profil pour recherche multi-appel (en anglais pour eBay)
 const EBAY_KEYWORDS_BY_PROFILE = {
-  beauty: ["maquillage", "parfum", "soins", "coffret beauté", "coiffure"]
+  beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"]
 };
 
 // Appel brut à l’API eBay
@@ -20,10 +20,8 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
     'keywords': keyword,
     'itemFilter(0).name': 'MaxPrice',
     'itemFilter(0).value': maxPrice.toString(),
-    'itemFilter(1).name': 'LocatedIn',
-    'itemFilter(1).value': 'FR',
-    'itemFilter(2).name': 'Condition',
-    'itemFilter(2).value': '1000',
+    'itemFilter(1).name': 'Condition',
+    'itemFilter(1).value': '1000', // Neuf
     'paginationInput.entriesPerPage': 20,
   });
 
@@ -57,6 +55,7 @@ function applyEbayBusinessRules(products, data) {
     const image = item.galleryURL?.[0] || "https://via.placeholder.com/150";
     const link = item.viewItemURL?.[0] || "#";
 
+    // Filtres : genre + exclus
     if (!matchGenderAge(title, gender)) {
       console.log(`>>> [eBayService] Écarté (genre) : ${title}`);
       return null;
