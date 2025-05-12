@@ -6,4 +6,5 @@ module.exports = {
     maison: ["décoration", "coussin", "plaid", "bougie", "cocooning"],
     game: ["jeu", "console", "manette", "gaming", "jeux vidéo"],
     music: ["musique", "enceinte", "casque", "guitare", "écouteurs"]
+   
   };
