@@ -8,15 +8,16 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"]
 };
 
-// Browse API (PROD uniquement)
+// Browse API
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
 const EBAY_OAUTH_TOKEN = process.env.EBAY_OAUTH_TOKEN;
+const EBAY_CAMPAIGN_ID = process.env.EPN_CAMPAIGN_ID;
 
 if (!EBAY_OAUTH_TOKEN) {
   console.error(">>> [eBayService] ERREUR : Aucun token OAuth eBay trouvé dans .env");
 }
 
-// Appel à la Browse API
+// Appel à l'API eBay
 async function fetchEbayRawProducts(keyword, maxPrice) {
   const params = new URLSearchParams({
     q: keyword,
@@ -32,7 +33,7 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
       headers: {
         'Authorization': `Bearer ${EBAY_OAUTH_TOKEN}`,
         'Content-Type': 'application/json',
-        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR' // France
+        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR',
       }
     });
 
@@ -44,14 +45,13 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
 
     const data = await res.json();
     return data.itemSummaries || [];
-
   } catch (err) {
     console.error(">>> [eBayService] Erreur réseau :", err.message);
     return [];
   }
 }
 
-// Application des règles métiers
+// Scoring et filtrage métier
 function applyEbayBusinessRules(products, data) {
   const interest = (data.interests?.[0] || "").toLowerCase();
   const preferences = Array.isArray(data.preferences) ? data.preferences : [];
@@ -63,7 +63,12 @@ function applyEbayBusinessRules(products, data) {
     const title = (item.title || "").toLowerCase();
     const price = parseFloat(item.price?.value) || 0;
     const image = item.image?.imageUrl || "https://via.placeholder.com/150";
-    const link = item.itemWebUrl || "#";
+
+    let link = item.itemWebUrl || "#";
+    if (EBAY_CAMPAIGN_ID && link.includes("ebay.")) {
+      const separator = link.includes('?') ? '&' : '?';
+      link += `${separator}campid=${EBAY_CAMPAIGN_ID}`;
+    }
 
     if (!matchGenderAge(title, gender)) {
       console.log(`>>> [eBayService] Exclu (genre) : ${title}`);
@@ -91,7 +96,9 @@ function applyEbayBusinessRules(products, data) {
       console.log(`>>> +${promoBonus}% pour promotion`);
     }
 
-    const isFast = item.shippingOptions?.some(opt => opt.shippingCarrierCode === "Chronopost" || opt.shippingCostType === "EXPRESS");
+    const isFast = item.shippingOptions?.some(opt =>
+      opt.shippingCarrierCode === "Chronopost" || opt.shippingCostType === "EXPRESS"
+    );
     if (isFast) {
       let fastBonus = scoringConfig.FAST_DELIVERY_BONUS;
       if (preferences.includes("fast_delivery")) fastBonus += scoringConfig.PREFERENCE_EXTRA_BONUS;
@@ -116,8 +123,8 @@ async function searchEbayProducts(data) {
     const interest = (data.interests?.[0] || "").toLowerCase();
     const maxPrice = data.budget || 99999;
     const keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
-
     const allProducts = [];
+
     for (const kw of keywordsList) {
       const result = await fetchEbayRawProducts(kw, maxPrice);
       allProducts.push(...result);
@@ -126,7 +133,6 @@ async function searchEbayProducts(data) {
     const filtered = applyEbayBusinessRules(allProducts, data);
     console.log(`>>> [eBayService] ${filtered.length} produits sélectionnés pour "${interest}"`);
     return filtered;
-
   } catch (err) {
     console.error(">>> [eBayService] Erreur searchEbayProducts :", err.message);
     return [];
