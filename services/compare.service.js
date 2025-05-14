@@ -11,7 +11,7 @@ async function compareProductsWithAI(product1, product2) {
   console.log(">>> [OpenRouter] Produit 2 :", JSON.stringify(product2, null, 2));
 
   const prompt = `
-Tu es un assistant shopping. Compare ces deux produits en français dans un tableau :
+Tu es un expert shopping. Compare objectivement ces deux produits en français dans un tableau :
 Produit 1 : ${product1.title} – ${product1.description || 'aucune description'}
 Produit 2 : ${product2.title} – ${product2.description || 'aucune description'}
 `.trim();
@@ -20,9 +20,9 @@ Produit 2 : ${product2.title} – ${product2.description || 'aucune description'
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "openchat/openchat-3.5-1210",
+        model: "nousresearch/deephermes-3-mistral-24b-preview",
         messages: [
-          { role: "system", content: "Tu es un expert en aide au choix de produit." },
+          { role: "system", content: "Tu es un assistant IA spécialisé dans les comparaisons produits." },
           { role: "user", content: prompt }
         ],
         temperature: 0.5
