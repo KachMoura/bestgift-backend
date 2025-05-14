@@ -11,20 +11,18 @@ async function compareProductsWithAI(product1, product2) {
   console.log(">>> [OpenRouter] Produit 2 :", JSON.stringify(product2, null, 2));
 
   const prompt = `
-Compare objectivement ces deux produits et présente les avantages et inconvénients de chacun dans un tableau clair :
+Tu es un assistant shopping. Compare ces deux produits en français dans un tableau :
 Produit 1 : ${product1.title} – ${product1.description || 'aucune description'}
 Produit 2 : ${product2.title} – ${product2.description || 'aucune description'}
 `.trim();
 
-  console.log(">>> [OpenRouter] Prompt envoyé :", prompt);
-
   try {
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions", // CORRECT URL
+      "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "deepseek/deepseek-chat-v3-0324", // CORRECT MODEL
+        model: "openchat/openchat-3.5-1210",
         messages: [
-          { role: "system", content: "Tu es un assistant expert en comparaison produit." },
+          { role: "system", content: "Tu es un expert en aide au choix de produit." },
           { role: "user", content: prompt }
         ],
         temperature: 0.5
@@ -37,12 +35,7 @@ Produit 2 : ${product2.title} – ${product2.description || 'aucune description'
       }
     );
 
-    console.log(">>> [OpenRouter] Statut HTTP :", response.status);
-    console.log(">>> [OpenRouter] Réponse JSON brute :", JSON.stringify(response.data, null, 2));
-
     const answer = response.data.choices?.[0]?.message?.content || "Réponse vide.";
-    console.log(">>> [OpenRouter] Réponse IA :", answer);
-
     return { analysis: answer };
   } catch (err) {
     console.error(">>> [OpenRouter] Erreur API :", err.response?.data || err.message);
