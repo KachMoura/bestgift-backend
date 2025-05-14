@@ -20,7 +20,7 @@ Produit 2 : ${product2.title} – ${product2.description || 'aucune description'
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "qwen/qwen1.5-1.8b", // NOM EXACT
+        model: "qwen/qwen1.5-0.5b-chat",
         messages: [
           { role: "system", content: "Tu es un assistant IA spécialisé dans la comparaison de produits." },
           { role: "user", content: prompt }
