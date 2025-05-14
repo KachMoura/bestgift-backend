@@ -20,9 +20,9 @@ Produit 2 : ${product2.title} – ${product2.description || 'aucune description'
 
   try {
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
+      "https://openrouter.ai/api/v1/chat/completions", // CORRECT URL
       {
-        model: "deepseek-ai/deepseek-chat",
+        model: "deepseek-chat", // CORRECT MODEL
         messages: [
           { role: "system", content: "Tu es un assistant expert en comparaison produit." },
           { role: "user", content: prompt }
