@@ -5,10 +5,10 @@ const { compareProductsWithAI } = require('../services/compare.service');
 // Route POST /api/compare
 router.post('/', async (req, res) => {
   const { product1, product2, products } = req.body;
-
   console.log(">>> [compareRoute] Requête reçue sur /api/compare");
 
-  if (products && Array.isArray(products) && products.length === 2) {
+  // Mode tableau (frontend V2)
+  if (Array.isArray(products) && products.length === 2) {
     console.log(">>> [compareRoute] Mode tableau détecté (frontend V2)");
     console.log(">>> Produits reçus :", JSON.stringify(products, null, 2));
     try {
@@ -20,9 +20,10 @@ router.post('/', async (req, res) => {
     }
   }
 
+  // Mode classique
   console.log(">>> [compareRoute] Mode classique (product1, product2)");
-  console.log(">>> Produit 1 :", JSON.stringify(product1));
-  console.log(">>> Produit 2 :", JSON.stringify(product2));
+  console.log(">>> Produit 1 :", JSON.stringify(product1, null, 2));
+  console.log(">>> Produit 2 :", JSON.stringify(product2, null, 2));
 
   if (!product1 || !product2) {
     console.warn(">>> [compareRoute] Produits manquants.");
@@ -31,10 +32,10 @@ router.post('/', async (req, res) => {
 
   try {
     const result = await compareProductsWithAI(product1, product2);
-    res.json(result);
+    return res.json(result);
   } catch (err) {
     console.error(">>> [compareRoute] Erreur (mode classique) :", err.message);
-    res.status(500).json({ error: "Erreur lors de la comparaison IA." });
+    return res.status(500).json({ error: "Erreur lors de la comparaison IA." });
   }
 });
 

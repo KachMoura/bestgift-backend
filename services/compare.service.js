@@ -1,17 +1,14 @@
 require('dotenv').config();
-const fetch = require('node-fetch');
+const axios = require('axios');
 
-const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/v1/chat/completions"; // À confirmer
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-
-if (!DEEPSEEK_API_KEY) {
-  console.error(">>> [DeepSeek] ERREUR : clé API manquante dans .env");
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+if (!OPENROUTER_API_KEY) {
+  console.error(">>> [OpenRouter] ERREUR : clé API manquante dans .env (OPENROUTER_API_KEY)");
 }
 
-// Fonction d’appel à l’IA DeepSeek
 async function compareProductsWithAI(product1, product2) {
-  console.log(">>> [DeepSeek] Produit 1 :", product1);
-  console.log(">>> [DeepSeek] Produit 2 :", product2);
+  console.log(">>> [OpenRouter] Produit 1 :", JSON.stringify(product1, null, 2));
+  console.log(">>> [OpenRouter] Produit 2 :", JSON.stringify(product2, null, 2));
 
   const prompt = `
 Compare objectivement ces deux produits et présente les avantages et inconvénients de chacun dans un tableau clair :
@@ -19,42 +16,37 @@ Produit 1 : ${product1.title} – ${product1.description || 'aucune description'
 Produit 2 : ${product2.title} – ${product2.description || 'aucune description'}
 `.trim();
 
-  console.log(">>> [DeepSeek] Prompt envoyé :", prompt);
+  console.log(">>> [OpenRouter] Prompt envoyé :", prompt);
 
   try {
-    const res = await fetch(DEEPSEEK_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: "deepseek-chat", // à vérifier selon leur doc officielle
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "deepseek-ai/deepseek-chat",
         messages: [
           { role: "system", content: "Tu es un assistant expert en comparaison produit." },
           { role: "user", content: prompt }
         ],
         temperature: 0.5
-      }),
-    });
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
-    console.log(">>> [DeepSeek] Statut de la réponse HTTP :", res.status);
+    console.log(">>> [OpenRouter] Statut HTTP :", response.status);
+    console.log(">>> [OpenRouter] Réponse JSON brute :", JSON.stringify(response.data, null, 2));
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error(">>> [DeepSeek] Erreur HTTP :", errorText);
-      return { error: "Erreur DeepSeek" };
-    }
+    const answer = response.data.choices?.[0]?.message?.content || "Réponse vide.";
+    console.log(">>> [OpenRouter] Réponse IA :", answer);
 
-    const json = await res.json();
-    console.log(">>> [DeepSeek] Réponse JSON brute :", JSON.stringify(json, null, 2));
-
-    const answer = json.choices?.[0]?.message?.content || "Réponse vide.";
     return { analysis: answer };
-
   } catch (err) {
-    console.error(">>> [DeepSeek] Exception JS :", err.message);
-    return { error: "Exception DeepSeek" };
+    console.error(">>> [OpenRouter] Erreur API :", err.response?.data || err.message);
+    return { error: "Erreur OpenRouter" };
   }
 }
 
