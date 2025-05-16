@@ -4,9 +4,12 @@ const scoringConfig = require('../data/scoringConfig');
 const ADVANCED_KEYWORDS = require('../data/advancedProfileKeywords');
 const { matchGenderAge } = require('../data/genderRules');
 
+// === Mots-clés API spécifiques par profil ===
 const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"],
-  tech: ["smartwatch", "gadget", "power bank", "wireless earbuds", "usb charger"]
+  tech: ["gadget", "smartwatch", "usb-c", "airpods", "drone 4k"],
+  book: ["fiction", "bande dessinée", "roman", "livre jeunesse", "livre audio"],
+  game: ["jeu vidéo", "console", "accessoire gaming", "jeu de société", "figurine"]
 };
 
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -114,6 +117,12 @@ function applyEbayBusinessRules(products, data) {
     if (hasFreeShipping) {
       matchingScore += 10;
       console.log(`>>> +10% pour livraison gratuite`);
+    }
+
+    const sellerNote = parseFloat(item.seller?.feedbackPercentage || "0");
+    if (sellerNote >= 90) {
+      matchingScore += scoringConfig.RATING_BONUS;
+      console.log(`>>> +${scoringConfig.RATING_BONUS}% pour bon vendeur (${sellerNote}%)`);
     }
 
     return {
