@@ -1,7 +1,7 @@
 const PRODUCT_FILTER_RULES = {
     Elle: ["barbe", "ceinture homme", "couteau", "bracelet homme", "montre homme"],
-    Lui: ["bijou", "sac", "maquillage", "bougie parfumée", "plaid rose"],
-    Enfant: ["montre", "barbe", "bijou", "parfum", "vin", "couteau"]
+    Lui: ["bijou", "makeup","sac", "maquillage", "bougie parfumée", "plaid rose"],
+    Enfant: ["montre", "barbe", "makeup","bijou", "parfum", "vin", "couteau"]
   };
   
   function matchGenderAge(title, gender) {
