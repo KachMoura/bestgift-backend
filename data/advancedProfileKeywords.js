@@ -49,9 +49,17 @@ module.exports = {
     ],
   
     book: [
-      "livre", "roman", "thriller", "fiction", "non-fiction", "autobiographie", "bande dessinée",
-      "bd", "auteur", "bibliothèque", "lecture", "classique", "science-fiction", "poésie",
-      "livre audio", "marque-page", "livre de poche", "saga", "policier", "conte", "fantasy"
+      // FR - Général
+      "livre", "roman", "lecture", "bibliothèque", "auteur", "livre de poche", "livre jeunesse", "saga",
+    
+      // Genres littéraires FR
+      "thriller", "fiction", "non-fiction", "autobiographie", "science-fiction", "fantasy", "poésie", "conte", "policier", "classique",
+    
+      // Éditions & formats
+      "bd", "bande dessinée", "manga", "livre audio", "ebook", "livre électronique", "marque-page",
+    
+      // EN - pour couvrir les cas eBay mixtes
+      "book", "novel", "author", "reading", "fiction book", "nonfiction", "sci-fi", "comic book", "audiobook", "biography", "detective", "poetry"
     ],
   
     music: [
