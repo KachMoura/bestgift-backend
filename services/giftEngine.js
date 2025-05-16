@@ -6,34 +6,36 @@ const { searchFakeStoreProducts } = require('../services/fakestore.service');
 const INTEREST_KEYWORDS = require('../data/interestKeywords');
 const GENDER_RULES = require('../data/genderRules');
 
+// Filtrage selon le genre
 function matchGenderAge(title, gender) {
   const forbidden = GENDER_RULES[gender] || [];
   const lowerTitle = title.toLowerCase();
   return !forbidden.some(keyword => lowerTitle.includes(keyword));
 }
 
+// Vérifie si le produit est déjà offert
 function isExcluded(title, excludedList) {
   const lowerTitle = title.toLowerCase();
   return excludedList.some(item => lowerTitle.includes(item));
 }
 
+// Moteur principal de génération
 async function generateSuggestions(data) {
   console.log(">>> [GiftEngine] Début génération pour :", data);
+
   const rawSuggestions = {};
   const interestKeywords = INTEREST_KEYWORDS[data.interests?.[0]] || [];
   const excluded = (data.excludedGifts || []).map(e => e.toLowerCase());
-
   const top = data.merchants?.top || [];
   const maybe = data.merchants?.maybe || [];
   const avoid = data.merchants?.avoid || [];
-
   const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore"];
   const requestedMerchants = [...top, ...maybe].filter(m => allMerchants.includes(m));
 
-  // === Traitement par marchand (si demandé et non évité) ===
   for (const merchant of requestedMerchants) {
     try {
       console.log(`>>> [GiftEngine] Traitement ${merchant}`);
+
       switch (merchant) {
         case "EasyGift":
           const easyGiftResults = await searchEasyGiftProducts(data);
@@ -94,13 +96,13 @@ async function generateSuggestions(data) {
           );
           break;
       }
+
     } catch (err) {
       console.error(`>>> [GiftEngine] Erreur ${merchant} :`, err.message);
       rawSuggestions[merchant] = [];
     }
   }
 
-  // === Ordonner les suggestions selon les préférences ===
   const suggestions = {};
   const order = [...top, ...maybe];
   for (const merchant of order) {
