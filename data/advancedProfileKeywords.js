@@ -1,13 +1,38 @@
 module.exports = {
-    tech: [
-      "gadget", "smartwatch", "bluetooth", "montre connectée", "bracelet connecté", "écouteurs sans fil",
-      "airpods", "usb", "usb-c", "lightning", "chargeur", "batterie externe", "powerbank",
-      "station de charge", "hub usb", "iot", "domotique", "assistant vocal", "google home",
-      "alexa", "raspberry pi", "arduino", "microcontrôleur", "prototypage", "drone", "drone 4k",
-      "caméra", "action cam", "gopro", "geek", "programmation", "robotique", "électronique",
-      "clavier mécanique", "iphone", "accessories", "connector", "locking", "bryant","locking", "spec", "plug", "écran incurvé", "webcam", "wifi", "routeur", "smart tv",
-      "chromecast", "fire stick", "projecteur", "home cinéma", "barre de son"
-    ],
+  tech: [
+    // Audio / connectivité
+    "écouteurs", "écouteurs sans fil", "airpods", "casque bluetooth", "bluetooth",
+    "station de charge", "chargeur", "usb", "usb-c", "lightning", "adaptateur", "hub usb",
+    "batterie externe", "powerbank", "câble", "câble usb", "câble rapide",
+  
+    // Montres et objets connectés
+    "smartwatch", "montre connectée", "bracelet connecté", "fitbit", "tracker d'activité",
+    "apple watch", "xiaomi band",
+  
+    // Domotique & assistants
+    "iot", "domotique", "assistant vocal", "google home", "alexa", "ampoule connectée", "prise connectée",
+  
+    // Programmation / électronique
+    "raspberry pi", "arduino", "microcontrôleur", "prototypage", "robotique", "électronique",
+    "programmation", "développement embarqué",
+  
+    // Vidéo et photo
+    "drone", "drone 4k", "caméra", "caméra connectée", "action cam", "gopro", "webcam", "caméra 360",
+  
+    // Accessoires tech
+    "clavier mécanique", "souris gaming", "support smartphone", "support tablette", "station d'accueil",
+    "coque iphone", "coque samsung", "accessoires tech", "étui tablette", "protection écran",
+  
+    // TV / Home cinéma
+    "smart tv", "tv connectée", "écran incurvé", "projecteur", "home cinéma", "barre de son",
+    "chromecast", "fire stick", "tv box", "android tv",
+  
+    // Réseaux / connectivité
+    "wifi", "routeur", "répéteur wifi", "amplificateur signal", "modem", "dongle usb wifi",
+  
+    // Divers
+    "gadget", "geek", "innovant", "tech lover", "nouvelle technologie", "innovation", "future tech"
+  ],
   
     sport: [
       "vélo", "bicyclette", "casque de vélo", "haltère", "fitness", "cardio", "tapis de sport",
