@@ -43,6 +43,13 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
     }
 
     const data = await res.json();
+
+//Log temporaire
+
+console.log(">>> [eBayService] Exemple brut :");
+console.log(JSON.stringify(data.itemSummaries?.[0], null, 2)); // On affiche le premier produit pour test
+
+
     return data.itemSummaries || [];
   } catch (err) {
     console.error(">>> [eBayService] Erreur réseau :", err.message);
