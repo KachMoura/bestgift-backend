@@ -89,7 +89,7 @@ function applyEbayBusinessRules(products, data) {
     console.log(`>>> [eBayService] ${title} → score de base : ${matchingScore}%`);
 
     const foundKeywords = profileKeywords.filter(kw => title.includes(kw));
-    if (foundKeywords.length >= 3) {
+    if (foundKeywords.length >= 2) {
       matchingScore += scoringConfig.ADVANCED_MATCH_BONUS;
       console.log(`>>> +${scoringConfig.ADVANCED_MATCH_BONUS}% pour compatibilité avancée`);
     }

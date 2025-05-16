@@ -39,5 +39,16 @@ module.exports = {
       "jeu", "jeux vidéo", "console", "switch", "ps5", "playstation", "xbox", "manette",
       "gaming", "setup gamer", "tapis de souris", "siège gamer", "streaming", "pc gamer",
       "vr", "réalité virtuelle", "jeu de rôle", "arcade", "Drive", "Portable", "joystick", "multijoueur"
+    ],
+
+    beauty: [
+      "makeup", "cosmetics", "beauty", "beauty set", "beauty gift", "skincare",
+      "serum", "anti-age", "moisturizer", "cream", "crème", "soin", "soin visage", "soin peau",
+      "face mask", "masque", "masque visage", "nettoyant", "tonique", "lotion",
+      "lipstick", "rouge à lèvres", "mascara", "eyeshadow", "fard à paupières", "eyeliner",
+      "vernis", "nail polish", "nails", "coffret beauté", "coffret soin", "parfum", "fragrance",
+      "eau de parfum", "eau de toilette", "déodorant", "shampoo", "shampoing", "conditioner",
+      "cheveux", "haircare", "brosse cheveux", "brosse lissante", "fer à lisser", "sèche-cheveux",
+      "épilation", "cire", "esthétique", "vanity", "trousse maquillage"
     ]
   };
