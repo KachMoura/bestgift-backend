@@ -16,14 +16,17 @@ if (!EBAY_OAUTH_TOKEN) {
   console.error(">>> [eBayService] ERREUR : Aucun token OAuth eBay trouvé dans .env");
 }
 
+// --- Appel à l’API eBay ---
 async function fetchEbayRawProducts(keyword, maxPrice) {
   const params = new URLSearchParams({
     q: keyword,
     limit: '20',
     filter: `price:[..${maxPrice}]`,
   });
+
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
   console.log(`>>> [eBayService] Appel Browse API : ${url}`);
+
   try {
     const res = await fetch(url, {
       headers: {
@@ -32,11 +35,13 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR',
       }
     });
+
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`>>> [eBayService] ERREUR HTTP ${res.status} : ${errorText}`);
       return [];
     }
+
     const data = await res.json();
     return data.itemSummaries || [];
   } catch (err) {
@@ -45,6 +50,7 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
   }
 }
 
+// --- Règles métier ---
 function applyEbayBusinessRules(products, data) {
   const interest = (data.interests?.[0] || "").toLowerCase();
   const preferences = Array.isArray(data.preferences) ? data.preferences : [];
@@ -56,16 +62,10 @@ function applyEbayBusinessRules(products, data) {
   return products.map(item => {
     const title = (item.title || "").toLowerCase();
     const price = parseFloat(item.price?.value) || 0;
-    if (price > maxBudget) {
-      console.log(`>>> [eBayService] Exclu (dépasse budget) : ${title} (${price} € > ${maxBudget} €)`);
-      return null;
-    }
 
-    const image = item.image?.imageUrl || "https://via.placeholder.com/150";
-    let link = item.itemWebUrl || "#";
-    if (EBAY_CAMPAIGN_ID && link.includes("ebay.")) {
-      const separator = link.includes('?') ? '&' : '?';
-      link += `${separator}campid=${EBAY_CAMPAIGN_ID}`;
+    if (price > maxBudget) {
+      console.log(`>>> [eBayService] Exclu (budget dépassé) : ${title} (${price} € > ${maxBudget} €)`);
+      return null;
     }
 
     if (!matchGenderAge(title, gender)) {
@@ -76,6 +76,13 @@ function applyEbayBusinessRules(products, data) {
     if (excluded.some(e => title.includes(e))) {
       console.log(`>>> [eBayService] Exclu (déjà offert) : ${title}`);
       return null;
+    }
+
+    const image = item.image?.imageUrl || "https://via.placeholder.com/150";
+    let link = item.itemWebUrl || "#";
+    if (EBAY_CAMPAIGN_ID && link.includes("ebay.")) {
+      const separator = link.includes('?') ? '&' : '?';
+      link += `${separator}campid=${EBAY_CAMPAIGN_ID}`;
     }
 
     let matchingScore = scoringConfig.BASE_SCORE;
@@ -115,13 +122,14 @@ function applyEbayBusinessRules(products, data) {
   }).filter(Boolean);
 }
 
+// --- Fonction principale ---
 async function searchEbayProducts(data) {
   try {
     const interest = (data.interests?.[0] || "").toLowerCase();
     const maxPrice = data.budget || 99999;
     const keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
-    const allProducts = [];
 
+    const allProducts = [];
     for (const kw of keywordsList) {
       const result = await fetchEbayRawProducts(kw, maxPrice);
       allProducts.push(...result);
