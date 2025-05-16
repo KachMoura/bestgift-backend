@@ -9,7 +9,8 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"],
   tech: ["gadget", "smartwatch", "usb-c", "airpods", "drone 4k"],
   book: ["fiction", "bande dessinée", "roman", "livre jeunesse", "livre audio"],
-  game: ["jeu vidéo", "console", "accessoire gaming", "jeu de société", "figurine"]
+  game: ["console", "jeux vidéo", "playstation", "figurine", "gaming"],
+  sport: ["fitness", "course", "chaussures de sport", "sac à dos sport", "montre cardio"]
 };
 
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -67,12 +68,10 @@ function applyEbayBusinessRules(products, data) {
       console.log(`>>> [eBayService] Exclu (budget dépassé) : ${title} (${price} € > ${maxBudget} €)`);
       return null;
     }
-
     if (!matchGenderAge(title, gender)) {
       console.log(`>>> [eBayService] Exclu (genre) : ${title}`);
       return null;
     }
-
     if (excluded.some(e => title.includes(e))) {
       console.log(`>>> [eBayService] Exclu (déjà offert) : ${title}`);
       return null;
@@ -143,12 +142,10 @@ async function searchEbayProducts(data) {
     const maxPrice = data.budget || 99999;
     const keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
     const allProducts = [];
-
     for (const kw of keywordsList) {
       const result = await fetchEbayRawProducts(kw, maxPrice);
       allProducts.push(...result);
     }
-
     const filtered = applyEbayBusinessRules(allProducts, data);
     console.log(`>>> [eBayService] ${filtered.length} produits sélectionnés pour "${interest}"`);
     return filtered;
