@@ -5,11 +5,11 @@ const PRODUCT_FILTER_RULES = {
   ],
   Lui: [
     "bijou", "makeup", "maquillage", "sac", "sac à main", "bougie parfumée",
-    "plaid rose", "palette", "lipstick", "rouge à lèvres", "vernis", "blush"
+    "plaid rose", "palette", "lipstick", "rouge à lèvres", "women", "girl", "femme", "vernis", "blush"
   ],
   Enfant: [
     "montre", "barbe", "makeup", "bijou", "parfum", "vin", "couteau",
-    "alcool", "jeux adultes"
+    "alcool", "adultes"
   ]
 };
 
