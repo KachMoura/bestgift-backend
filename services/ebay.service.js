@@ -5,7 +5,7 @@ const ADVANCED_KEYWORDS = require('../data/advancedProfileKeywords');
 const { matchGenderAge } = require('../data/genderRules');
 
 const EBAY_KEYWORDS_BY_PROFILE = {
-  beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"]
+  beauty: ["makeup", "maquillage", "perfume", "parfum", "skincare", "soin visage", "beauty gift set", "coffret beauté", "haircare", "soin cheveux"]
 };
 
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -23,10 +23,8 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
     limit: '20',
     filter: `price:[..${maxPrice}]`,
   });
-
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
   console.log(`>>> [eBayService] Appel Browse API : ${url}`);
-
   try {
     const res = await fetch(url, {
       headers: {
@@ -35,21 +33,14 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR',
       }
     });
-
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`>>> [eBayService] ERREUR HTTP ${res.status} : ${errorText}`);
       return [];
     }
-
     const data = await res.json();
-
-//Log temporaire
-
-console.log(">>> [eBayService] Exemple brut :");
-console.log(JSON.stringify(data.itemSummaries?.[0], null, 2)); // On affiche le premier produit pour test
-
-
+    console.log(">>> [eBayService] Exemple brut :");
+    console.log(JSON.stringify(data.itemSummaries?.[0], null, 2)); // exemple pour debug
     return data.itemSummaries || [];
   } catch (err) {
     console.error(">>> [eBayService] Erreur réseau :", err.message);
@@ -118,6 +109,12 @@ function applyEbayBusinessRules(products, data) {
       console.log(`>>> +${fastBonus}% pour livraison rapide`);
     }
 
+    const sellerRating = parseFloat(item.seller?.feedbackPercentage || "0");
+    if (sellerRating >= 95) {
+      matchingScore += scoringConfig.RATING_BONUS;
+      console.log(`>>> +${scoringConfig.RATING_BONUS}% pour vendeur bien noté (${sellerRating}%)`);
+    }
+
     return {
       title,
       price,
@@ -135,13 +132,11 @@ async function searchEbayProducts(data) {
     const interest = (data.interests?.[0] || "").toLowerCase();
     const maxPrice = data.budget || 99999;
     const keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
-
     const allProducts = [];
     for (const kw of keywordsList) {
       const result = await fetchEbayRawProducts(kw, maxPrice);
       allProducts.push(...result);
     }
-
     const filtered = applyEbayBusinessRules(allProducts, data);
     console.log(`>>> [eBayService] ${filtered.length} produits sélectionnés pour "${interest}"`);
     return filtered;
