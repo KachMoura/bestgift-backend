@@ -8,7 +8,6 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"]
 };
 
-// Browse API
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
 const EBAY_OAUTH_TOKEN = process.env.EBAY_OAUTH_TOKEN;
 const EBAY_CAMPAIGN_ID = process.env.EPN_CAMPAIGN_ID;
@@ -17,17 +16,14 @@ if (!EBAY_OAUTH_TOKEN) {
   console.error(">>> [eBayService] ERREUR : Aucun token OAuth eBay trouvé dans .env");
 }
 
-// Appel à l'API eBay
 async function fetchEbayRawProducts(keyword, maxPrice) {
   const params = new URLSearchParams({
     q: keyword,
     limit: '20',
     filter: `price:[..${maxPrice}]`,
   });
-
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
   console.log(`>>> [eBayService] Appel Browse API : ${url}`);
-
   try {
     const res = await fetch(url, {
       headers: {
@@ -36,13 +32,11 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR',
       }
     });
-
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`>>> [eBayService] ERREUR HTTP ${res.status} : ${errorText}`);
       return [];
     }
-
     const data = await res.json();
     return data.itemSummaries || [];
   } catch (err) {
@@ -51,19 +45,23 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
   }
 }
 
-// Scoring et filtrage métier
 function applyEbayBusinessRules(products, data) {
   const interest = (data.interests?.[0] || "").toLowerCase();
   const preferences = Array.isArray(data.preferences) ? data.preferences : [];
   const excluded = (data.excludedGifts || []).map(e => e.toLowerCase());
   const gender = data.gender || null;
+  const maxBudget = data.budget || 99999;
   const profileKeywords = ADVANCED_KEYWORDS[interest] || [];
 
   return products.map(item => {
     const title = (item.title || "").toLowerCase();
     const price = parseFloat(item.price?.value) || 0;
-    const image = item.image?.imageUrl || "https://via.placeholder.com/150";
+    if (price > maxBudget) {
+      console.log(`>>> [eBayService] Exclu (dépasse budget) : ${title} (${price} € > ${maxBudget} €)`);
+      return null;
+    }
 
+    const image = item.image?.imageUrl || "https://via.placeholder.com/150";
     let link = item.itemWebUrl || "#";
     if (EBAY_CAMPAIGN_ID && link.includes("ebay.")) {
       const separator = link.includes('?') ? '&' : '?';
@@ -117,7 +115,6 @@ function applyEbayBusinessRules(products, data) {
   }).filter(Boolean);
 }
 
-// Fonction principale
 async function searchEbayProducts(data) {
   try {
     const interest = (data.interests?.[0] || "").toLowerCase();
