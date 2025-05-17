@@ -11,7 +11,8 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   book: ["fiction", "bande dessinée", "roman", "livre jeunesse", "livre audio"],
   game: ["console", "jeux vidéo", "playstation", "figurine", "gaming"],
   sport: ["fitness", "course", "chaussures de sport", "sac à dos sport", "montre cardio"],
-  music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"]
+  music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
+  maison: ["diffuseur", "bougie", "tapis", "lampe de chevet", "Coussin décoratif"]
 };
 
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -31,7 +32,6 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
   });
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
   console.log(`>>> [eBayService] Appel Browse API : ${url}`);
-
   try {
     const res = await fetch(url, {
       headers: {
@@ -40,13 +40,11 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR'
       }
     });
-
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`>>> [eBayService] ERREUR HTTP ${res.status} : ${errorText}`);
       return [];
     }
-
     const data = await res.json();
     return data.itemSummaries || [];
   } catch (err) {
@@ -161,10 +159,7 @@ async function searchEbayProducts(data) {
     }
 
     const filtered = applyEbayBusinessRules(allProducts, data);
-
-    // Tri par score décroissant
     filtered.sort((a, b) => b.matchingScore - a.matchingScore);
-
     console.log(`>>> [eBayService] ${filtered.length} produits sélectionnés pour "${interest}"`);
     return filtered;
   } catch (err) {
