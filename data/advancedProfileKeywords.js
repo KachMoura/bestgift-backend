@@ -56,6 +56,16 @@ module.exports = {
       "engrais bio", "bouteille réutilisable", "filtre charbon", "éponge lavable"
     ],
 
+    jewelry: [
+      "bracelet", "bracelet cuir", "bracelet chaîne", "bracelet perles",
+      "collier", "collier argent", "collier coeur", "pendentif",
+      "bracelet", "necklace", "earrings", "ring", "fashion jewlry",
+      "bague", "bague argent", "bague ajustable", "bague pierre",
+      "boucles d'oreilles", "clous d'oreilles", "créoles", "bijoux fantaisie",
+      "bijoux femme", "bijoux homme", "bijoux faits main", "bijoux bohèmes",
+      "coffret bijoux", "porte-bijoux", "parure", "accessoires mode"
+    ],
+
     book: [
       // FR - Général
       "livre", "roman", "lecture", "bibliothèque", "auteur", "livre de poche", "livre jeunesse", "saga",

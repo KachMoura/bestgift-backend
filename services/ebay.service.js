@@ -13,7 +13,8 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   sport: ["fitness", "course", "chaussures de sport", "sac à dos sport", "montre cardio"],
   music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
   maison: ["diffuseur", "bougie", "tapis", "lampe de chevet", "Coussin décoratif"],
-  ecolo: ["recyclable", "zéro déchet", "ecolo", "rechargeable", "gourde inox"]
+  ecolo: ["vase", "plantes", "écologique", "jardin", "gourde inox"],
+  jewelry: ["bracelet", "collier", "boucles d'oreilles", "bague", "bijoux fantaisie"]
 };
 
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
