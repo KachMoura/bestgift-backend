@@ -11,7 +11,7 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   book: ["fiction", "bande dessinée", "roman", "livre jeunesse", "livre audio"],
   game: ["console", "jeux vidéo", "playstation", "figurine", "gaming"],
   sport: ["fitness", "course", "chaussures de sport", "sac à dos sport", "montre cardio"],
-  music: ["enceinte bluetooth", "casque audio", "platine vinyle", "écouteurs sans fil", "instrument musique"]
+  music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"]
 };
 
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -27,23 +27,26 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
   const params = new URLSearchParams({
     q: keyword,
     limit: '20',
-    filter: `price:[..${maxPrice}],conditions:{NEW}`
+    filter: `price:[..${maxPrice}]`
   });
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
   console.log(`>>> [eBayService] Appel Browse API : ${url}`);
+
   try {
     const res = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${EBAY_OAUTH_TOKEN}`,
         'Content-Type': 'application/json',
-        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR',
+        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR'
       }
     });
+
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`>>> [eBayService] ERREUR HTTP ${res.status} : ${errorText}`);
       return [];
     }
+
     const data = await res.json();
     return data.itemSummaries || [];
   } catch (err) {
@@ -64,15 +67,15 @@ function applyEbayBusinessRules(products, data) {
   return products.map(item => {
     const title = (item.title || "").toLowerCase();
     const price = parseFloat(item.price?.value) || 0;
-    const condition = (item.condition || "").toLowerCase();
-
-    if (condition !== "neuf" && condition !== "new") {
-      console.log(`>>> [eBayService] Exclu (pas neuf) : ${title}`);
-      return null;
-    }
+    const condition = item.condition || "";
 
     if (price > maxBudget) {
       console.log(`>>> [eBayService] Exclu (budget dépassé) : ${title} (${price} € > ${maxBudget} €)`);
+      return null;
+    }
+
+    if (condition.toLowerCase() !== "neuf" && condition.toLowerCase() !== "new") {
+      console.log(`>>> [eBayService] Exclu (état : ${condition}) : ${title}`);
       return null;
     }
 
@@ -139,7 +142,7 @@ function applyEbayBusinessRules(products, data) {
       image,
       link,
       merchant: "eBay",
-      matchingScore,
+      matchingScore
     };
   }).filter(Boolean);
 }
@@ -158,6 +161,10 @@ async function searchEbayProducts(data) {
     }
 
     const filtered = applyEbayBusinessRules(allProducts, data);
+
+    // Tri par score décroissant
+    filtered.sort((a, b) => b.matchingScore - a.matchingScore);
+
     console.log(`>>> [eBayService] ${filtered.length} produits sélectionnés pour "${interest}"`);
     return filtered;
   } catch (err) {
@@ -167,5 +174,5 @@ async function searchEbayProducts(data) {
 }
 
 module.exports = {
-  searchEbayProducts,
+  searchEbayProducts
 };
