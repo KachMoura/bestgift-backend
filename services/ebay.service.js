@@ -7,10 +7,11 @@ const { matchGenderAge } = require('../data/genderRules');
 // === Mots-clés API spécifiques par profil ===
 const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"],
-  tech: ["gadget", "smartwatch", "usb-c", "airpods", "drone 4k"],
+  tech: ["gadget", "smartwatch", "Tablette", "airpods", "drone 4k"],
   book: ["fiction", "bande dessinée", "roman", "livre jeunesse", "livre audio"],
   game: ["console", "jeux vidéo", "playstation", "figurine", "gaming"],
-  sport: ["fitness", "course", "chaussures de sport", "sac à dos sport", "montre cardio"]
+  sport: ["fitness", "course", "chaussures de sport", "sac à dos sport", "montre cardio"],
+  music: ["enceinte bluetooth", "casque audio", "platine vinyle", "écouteurs sans fil", "instrument musique"]
 };
 
 const EBAY_BROWSE_ENDPOINT = 'https://api.ebay.com/buy/browse/v1/item_summary/search';
@@ -26,7 +27,7 @@ async function fetchEbayRawProducts(keyword, maxPrice) {
   const params = new URLSearchParams({
     q: keyword,
     limit: '20',
-    filter: `price:[..${maxPrice}]`,
+    filter: `price:[..${maxPrice}],conditions:{NEW}`
   });
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
   console.log(`>>> [eBayService] Appel Browse API : ${url}`);
@@ -63,15 +64,23 @@ function applyEbayBusinessRules(products, data) {
   return products.map(item => {
     const title = (item.title || "").toLowerCase();
     const price = parseFloat(item.price?.value) || 0;
+    const condition = (item.condition || "").toLowerCase();
+
+    if (condition !== "neuf" && condition !== "new") {
+      console.log(`>>> [eBayService] Exclu (pas neuf) : ${title}`);
+      return null;
+    }
 
     if (price > maxBudget) {
       console.log(`>>> [eBayService] Exclu (budget dépassé) : ${title} (${price} € > ${maxBudget} €)`);
       return null;
     }
+
     if (!matchGenderAge(title, gender)) {
       console.log(`>>> [eBayService] Exclu (genre) : ${title}`);
       return null;
     }
+
     if (excluded.some(e => title.includes(e))) {
       console.log(`>>> [eBayService] Exclu (déjà offert) : ${title}`);
       return null;
@@ -142,10 +151,12 @@ async function searchEbayProducts(data) {
     const maxPrice = data.budget || 99999;
     const keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
     const allProducts = [];
+
     for (const kw of keywordsList) {
       const result = await fetchEbayRawProducts(kw, maxPrice);
       allProducts.push(...result);
     }
+
     const filtered = applyEbayBusinessRules(allProducts, data);
     console.log(`>>> [eBayService] ${filtered.length} produits sélectionnés pour "${interest}"`);
     return filtered;

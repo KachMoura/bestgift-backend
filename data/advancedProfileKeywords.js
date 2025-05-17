@@ -65,7 +65,8 @@ module.exports = {
     music: [
       "musique", "guitare", "piano", "partition", "écoute", "enceinte", "enceinte bluetooth",
       "casque audio", "airpods", "ampli", "batterie électronique", "métronome", "ukulele",
-      "microphone", "carte son", "studio", "mixer", "dj", "musicien", "instrument", "écouteurs"
+      "microphone", "carte son", "studio", "mixer", "dj", "musicien", "instrument", "écouteurs",
+      "enceinte", "casque audio", "platine vinyle", "écouteurs sans fil", "instrument musique"
     ],
   
     game: [
