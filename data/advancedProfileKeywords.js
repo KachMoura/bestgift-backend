@@ -48,6 +48,14 @@ module.exports = {
       "hygge", "bouillotte", "lumière douce", "housse de coussin"
     ],
   
+    ecolo: [
+      "écologique", "durable", "recyclé", "recyclable", "biodégradable", "écoresponsable",
+      "naturel", "zéro déchet", "compostable", "sans plastique", "lavable", "réutilisable",
+      "produit écologique", "cosmétique bio", "shampoing solide", "brosse bambou", "coton lavable",
+      "gourde inox", "sac vrac", "savon naturel", "lessive maison", "vrac", "bee wrap", "packaging compostable",
+      "engrais bio", "bouteille réutilisable", "filtre charbon", "éponge lavable"
+    ],
+
     book: [
       // FR - Général
       "livre", "roman", "lecture", "bibliothèque", "auteur", "livre de poche", "livre jeunesse", "saga",
