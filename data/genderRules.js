@@ -1,7 +1,7 @@
 const PRODUCT_FILTER_RULES = {
   Elle: [
     "barbe", "ceinture homme", "couteau", "bracelet homme", "montre homme",
-    "rasoir", "perfume homme", "men watch", "beard", "wallet homme"
+    "rasoir", "perfume homme", "Chaussure homme", "men watch", "beard", "wallet homme"
   ],
   Lui: [
     "bijou", "makeup", "maquillage", "sac", "sac à main", "bougie parfumée",
