@@ -26,11 +26,11 @@ if (!EBAY_OAUTH_TOKEN) {
 }
 
 // --- Appel à l’API eBay ---
-async function fetchEbayRawProducts(keyword, maxPrice) {
+async function fetchEbayRawProducts(keyword, minPrice, maxPrice) {
   const params = new URLSearchParams({
     q: keyword,
     limit: '20',
-    filter: `price:[..${maxPrice}]`
+    filter: `price:[${minPrice}..${maxPrice}]`
   });
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
   console.log(`>>> [eBayService] Appel Browse API : ${url}`);
@@ -61,8 +61,8 @@ function applyEbayBusinessRules(products, data) {
   const preferences = Array.isArray(data.preferences) ? data.preferences : [];
   const excluded = (data.excludedGifts || []).map(e => e.toLowerCase());
   const gender = data.gender || null;
-  const maxBudget = data.budget || 99999;
   const profileKeywords = ADVANCED_KEYWORDS[interest] || [];
+  const maxBudget = data.maxBudget || 99999;
 
   return products.map(item => {
     const title = (item.title || "").toLowerCase();
@@ -73,17 +73,14 @@ function applyEbayBusinessRules(products, data) {
       console.log(`>>> [eBayService] Exclu (budget dépassé) : ${title} (${price} € > ${maxBudget} €)`);
       return null;
     }
-
     if (condition.toLowerCase() !== "neuf" && condition.toLowerCase() !== "new") {
       console.log(`>>> [eBayService] Exclu (état : ${condition}) : ${title}`);
       return null;
     }
-
     if (!matchGenderAge(title, gender)) {
       console.log(`>>> [eBayService] Exclu (genre) : ${title}`);
       return null;
     }
-
     if (excluded.some(e => title.includes(e))) {
       console.log(`>>> [eBayService] Exclu (déjà offert) : ${title}`);
       return null;
@@ -151,12 +148,13 @@ function applyEbayBusinessRules(products, data) {
 async function searchEbayProducts(data) {
   try {
     const interest = (data.interests?.[0] || "").toLowerCase();
-    const maxPrice = data.budget || 99999;
+    const minPrice = data.minBudget || 0;
+    const maxPrice = data.maxBudget || 99999;
     const keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
-    const allProducts = [];
 
+    const allProducts = [];
     for (const kw of keywordsList) {
-      const result = await fetchEbayRawProducts(kw, maxPrice);
+      const result = await fetchEbayRawProducts(kw, minPrice, maxPrice);
       allProducts.push(...result);
     }
 
