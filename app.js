@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 // Importation des routes
 const suggestionRoutes = require("./routes/suggestionRoutes");
 const compareRoutes = require('./routes/compareRoutes');
-const catalogueRoutes = require('./routes/catalogueRoutes'); // <-- ajout ici
+const catalogueRoutes = require('./routes/catalogRoutes'); // <-- ajout ici
 
 // Middleware globaux
 app.use(cors());
