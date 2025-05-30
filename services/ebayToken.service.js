@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Pool } = require('pg');
 const fetch = require('node-fetch');
 
+// Connexion PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL.includes("render.com") ? { rejectUnauthorized: false } : false
@@ -17,6 +18,7 @@ async function getValidToken() {
   `);
   const token = rows[0];
   if (token && new Date(token.expires_at) > new Date()) {
+    console.log(">>> [eBayToken] Token valide récupéré depuis la base.");
     return token.access_token;
   }
   return await refreshToken();
@@ -35,6 +37,13 @@ async function refreshToken() {
     body: "grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope"
   });
 
+  // 🔴 Gestion des erreurs HTTP
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error(">>> [eBayToken] Erreur HTTP eBay :", res.status, errorText);
+    throw new Error("Échec de la récupération du token eBay.");
+  }
+
   const data = await res.json();
 
   if (!data.access_token) {
@@ -48,6 +57,7 @@ async function refreshToken() {
     VALUES ($1, $2)
   `, [data.access_token, expiresAt]);
 
+  console.log(">>> [eBayToken] Nouveau token eBay inséré avec succès.");
   return data.access_token;
 }
 
