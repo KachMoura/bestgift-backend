@@ -27,6 +27,7 @@ function normalizeGender(value) {
   if (["lui", "homme"].includes(v)) return "lui";
   if (["elle", "femme"].includes(v)) return "elle";
   if (["enfant", "kid"].includes(v)) return "enfant";
+  if (["all", "tous", "mixte", "unisex"].includes(v)) return "all"; // ✅ AJOUT ICI
   return v;
 }
 
@@ -57,7 +58,7 @@ function applyEasyGiftBusinessRules(products, data) {
       const matchesInterest = title.includes(interest) || tags.includes(interest);
       const matchesBudget = price <= budget;
       const notExcluded = !excluded.some(ex => title.includes(ex));
-      const matchesGender = !productGender || productGender === gender;
+      const matchesGender = !productGender || productGender === 'all' || productGender === gender;
 
       const reasons = [];
       if (!matchesInterest) reasons.push("pas d'intérêt");
