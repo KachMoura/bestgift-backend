@@ -1,5 +1,6 @@
 require('dotenv').config();
 const fetch = require('node-fetch');
+const { getValidToken } = require('./ebayToken.service');
 const scoringConfig = require('../data/scoringConfig');
 const ADVANCED_KEYWORDS = require('../data/advancedProfileKeywords');
 const { matchGenderAge } = require('../data/genderRules');
@@ -17,12 +18,7 @@ const EBAY_KEYWORDS_BY_PROFILE = {
 };
 
 const EBAY_BROWSE_ENDPOINT = "https://api.ebay.com/buy/browse/v1/item_summary/search";
-const EBAY_OAUTH_TOKEN = process.env.EBAY_OAUTH_TOKEN;
 const EBAY_CAMPAIGN_ID = process.env.EPN_CAMPAIGN_ID;
-
-if (!EBAY_OAUTH_TOKEN) {
-  console.error(">>> [eBayService] ERREUR : Aucun token OAuth eBay trouvé dans .env");
-}
 
 async function fetchEbayRawProducts(keyword, minPrice, maxPrice) {
   const params = new URLSearchParams({
@@ -32,24 +28,29 @@ async function fetchEbayRawProducts(keyword, minPrice, maxPrice) {
   });
 
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
+  const token = await getValidToken();
+
   console.log(`>>> [eBayService] Appel API : ${url}`);
 
   try {
     const res = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${EBAY_OAUTH_TOKEN}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR'
       }
     });
+
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`>>> [eBayService] ERREUR HTTP ${res.status} : ${errorText}`);
       return [];
     }
+
     const data = await res.json();
     console.log(`>>> [eBayService] ${data.itemSummaries?.length || 0} produits bruts reçus pour "${keyword}"`);
     return data.itemSummaries || [];
+
   } catch (err) {
     console.error(">>> [eBayService] Erreur réseau :", err.message);
     return [];
@@ -73,22 +74,10 @@ function applyEbayBusinessRules(products, data) {
     const price = parseFloat(item.price?.value) || 0;
     const condition = item.condition || "";
 
-    if (price < minBudget || price > maxBudget) {
-      console.log(`>>> Exclu (hors budget) : ${title} → ${price} €`);
-      return null;
-    }
-    if (!["neuf", "new"].includes(condition.toLowerCase())) {
-      console.log(`>>> Exclu (état : ${condition}) : ${title}`);
-      return null;
-    }
-    if (!matchGenderAge(title, gender)) {
-      console.log(`>>> Exclu (genre) : ${title}`);
-      return null;
-    }
-    if (excluded.some(e => title.includes(e))) {
-      console.log(`>>> Exclu (déjà offert) : ${title}`);
-      return null;
-    }
+    if (price < minBudget || price > maxBudget) return null;
+    if (!["neuf", "new"].includes(condition.toLowerCase())) return null;
+    if (!matchGenderAge(title, gender)) return null;
+    if (excluded.some(e => title.includes(e))) return null;
 
     const image = item.image?.imageUrl || "https://via.placeholder.com/150";
     let link = item.itemWebUrl || "#";
@@ -98,17 +87,16 @@ function applyEbayBusinessRules(products, data) {
     }
 
     let matchingScore = scoringConfig.BASE_SCORE;
+
     const foundKeywords = profileKeywords.filter(kw => title.includes(kw));
     if (foundKeywords.length >= 2) {
       matchingScore += scoringConfig.ADVANCED_MATCH_BONUS;
-      console.log(`>>> +${scoringConfig.ADVANCED_MATCH_BONUS}% pour mots-clés`);
     }
 
     if (item.price?.discountAmount) {
       let promoBonus = scoringConfig.PROMO_BONUS;
       if (preferences.includes("promo")) promoBonus += scoringConfig.PREFERENCE_EXTRA_BONUS;
       matchingScore += promoBonus;
-      console.log(`>>> +${promoBonus}% promo`);
     }
 
     const isFast = item.shippingOptions?.some(opt =>
@@ -118,7 +106,6 @@ function applyEbayBusinessRules(products, data) {
       let fastBonus = scoringConfig.FAST_DELIVERY_BONUS;
       if (preferences.includes("fast_delivery")) fastBonus += scoringConfig.PREFERENCE_EXTRA_BONUS;
       matchingScore += fastBonus;
-      console.log(`>>> +${fastBonus}% livraison rapide`);
     }
 
     const hasFreeShipping = item.shippingOptions?.some(opt =>
@@ -126,13 +113,11 @@ function applyEbayBusinessRules(products, data) {
     );
     if (hasFreeShipping) {
       matchingScore += 10;
-      console.log(`>>> +10% livraison gratuite`);
     }
 
     const sellerNote = parseFloat(item.seller?.feedbackPercentage || "0");
     if (sellerNote >= 90) {
       matchingScore += scoringConfig.RATING_BONUS;
-      console.log(`>>> +${scoringConfig.RATING_BONUS}% vendeur noté ${sellerNote}%`);
     }
 
     return {
@@ -156,6 +141,7 @@ async function searchEbayProducts(data) {
     console.log(`>>> [eBayService] Recherche pour "${interest}" avec min : ${minPrice}€, max : ${maxPrice}€`);
 
     const allProducts = [];
+
     for (const kw of keywordsList) {
       const result = await fetchEbayRawProducts(kw, minPrice, maxPrice);
       allProducts.push(...result);
@@ -163,8 +149,10 @@ async function searchEbayProducts(data) {
 
     const filtered = applyEbayBusinessRules(allProducts, data);
     filtered.sort((a, b) => b.matchingScore - a.matchingScore);
+
     console.log(`>>> [eBayService] ${filtered.length} produits sélectionnés pour "${interest}"`);
     return filtered;
+
   } catch (err) {
     console.error(">>> [eBayService] Erreur searchEbayProducts :", err.message);
     return [];
