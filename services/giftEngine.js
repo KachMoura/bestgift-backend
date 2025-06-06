@@ -3,6 +3,8 @@ const { searchRakutenProducts } = require('../services/rakuten.service');
 const { fetchDecathlonProducts } = require('../services/decathlon.service');
 const { searchEasyGiftProducts } = require('../services/easygiftCatalogService');
 const { searchFakeStoreProducts } = require('../services/fakestore.service');
+const { searchAffilaeProducts } = require('../services/affilae.service'); // 👈 ajouté ici
+
 const INTEREST_KEYWORDS = require('../data/interestKeywords');
 const GENDER_RULES = require('../data/genderRules');
 
@@ -29,13 +31,13 @@ async function generateSuggestions(data) {
   const top = data.merchants?.top || [];
   const maybe = data.merchants?.maybe || [];
   const avoid = data.merchants?.avoid || [];
-  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore"];
+
+  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore", "Affilae"]; // 👈 ajouté Affilae ici
   const requestedMerchants = [...top, ...maybe].filter(m => allMerchants.includes(m));
 
   for (const merchant of requestedMerchants) {
     try {
       console.log(`>>> [GiftEngine] Traitement ${merchant}`);
-
       switch (merchant) {
         case "EasyGift":
           const easyGiftResults = await searchEasyGiftProducts(data);
@@ -95,8 +97,15 @@ async function generateSuggestions(data) {
             !isExcluded(p.title, excluded)
           );
           break;
-      }
 
+        case "Affilae": // 👈 nouveau bloc
+          const affilaeResults = await searchAffilaeProducts(data);
+          rawSuggestions[merchant] = affilaeResults.filter(p =>
+            matchGenderAge(p.title, data.gender) &&
+            !isExcluded(p.title, excluded)
+          );
+          break;
+      }
     } catch (err) {
       console.error(`>>> [GiftEngine] Erreur ${merchant} :`, err.message);
       rawSuggestions[merchant] = [];
