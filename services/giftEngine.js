@@ -32,7 +32,7 @@ async function generateSuggestions(data) {
   const maybe = data.merchants?.maybe || [];
   const avoid = data.merchants?.avoid || [];
 
-  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore", "Affilae"]; // 👈 ajouté Affilae ici
+  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore", "SportDecouverte", "Affilae"]; // 👈 ajouté Affilae ici
   const requestedMerchants = [...top, ...maybe].filter(m => allMerchants.includes(m));
 
   for (const merchant of requestedMerchants) {
@@ -105,6 +105,16 @@ async function generateSuggestions(data) {
             !isExcluded(p.title, excluded)
           );
           break;
+
+
+    case "SportDecouverte":
+        const sportDecouverteResults = await searchSportDecouverteProducts(data);
+        rawSuggestions[merchant] = sportDecouverteResults.filter(p =>
+          matchGenderAge(p.title, data.gender) &&
+          !isExcluded(p.title, excluded)
+        );
+        break;
+
       }
     } catch (err) {
       console.error(`>>> [GiftEngine] Erreur ${merchant} :`, err.message);
