@@ -8,7 +8,7 @@ const AFFILAE_CAMPAIGN_ID = process.env.AFFILAE_CAMPAIGN_ID || '';
 const DEFAULT_PROGRAM_ID = 137; // Sport Découverte
 
 async function fetchAffilaeRawProducts(programId = DEFAULT_PROGRAM_ID) {
-  const url = `https://rest.affilae.com/v3/programs/${programId}/products`;
+  const url = `https://rest.affilae.com/v1/programs/${programId}/products`;
 
   try {
     const res = await fetch(url, {
