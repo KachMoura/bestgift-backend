@@ -3,7 +3,7 @@ const { searchRakutenProducts } = require('../services/rakuten.service');
 const { fetchDecathlonProducts } = require('../services/decathlon.service');
 const { searchEasyGiftProducts } = require('../services/easygiftCatalogService');
 const { searchFakeStoreProducts } = require('../services/fakestore.service');
-const { searchAffilaeProducts } = require('../services/affilae.service'); // 👈 ajouté ici
+const { searchSportDecouverteProducts } = require('../services/sportdecouverte.service'); // 👈 ajouté ici
 
 const INTEREST_KEYWORDS = require('../data/interestKeywords');
 const GENDER_RULES = require('../data/genderRules');
@@ -99,7 +99,7 @@ async function generateSuggestions(data) {
           break;
 
         case "Affilae": // 👈 nouveau bloc
-          const affilaeResults = await searchAffilaeProducts(data);
+          const affilaeResults = await searchSportDecouverteProducts(data);
           rawSuggestions[merchant] = affilaeResults.filter(p =>
             matchGenderAge(p.title, data.gender) &&
             !isExcluded(p.title, excluded)
