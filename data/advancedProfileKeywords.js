@@ -38,7 +38,7 @@ module.exports = {
       "vélo", "bicyclette", "casque de vélo", "haltère", "fitness", "cardio", "tapis de sport",
       "yoga", "brique de yoga", "stretching", "course à pied", "running", "trail", "basketball",
       "football", "raquette", "badminton", "ping pong", "ski", "randonnée", "sac à dos sport",
-      "tennis", "ballon", "crampons", "fitness tracker", "Garfield", "GF-04", "STAR", "bracelet connecté"
+      "tennis", "ballon", "crampons", "aventure", "Randonnée", "Ski","Pilotage", "saut", "surf", "Plongée", "fitness tracker", "Garfield", "GF-04", "STAR", "bracelet connecté"
     ],
   
     maison: [

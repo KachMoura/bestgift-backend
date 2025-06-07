@@ -74,15 +74,15 @@ async function scrapeProductPage(url) {
     // ✅ Autres champs
     const tags = ['expérience', 'sport', 'aventure'];
     const gender = 'all';
-    const free_shipping = false;
+    const free_shipping = true;
     const delivery_days_min = 1;
-    const delivery_days_max = 5;
+    const delivery_days_max = 1;
     const is_promo = url.includes("promo");
     const product_weight_kg = 0.1;
     const product_height_cm = 20;
     const product_width_cm = 20;
     const product_depth_cm = 5;
-    const rating = 4.0;
+    const rating = 4.5;
 
     // ✅ Console log debug
     console.log("\n>>> Produit extrait :");
@@ -157,6 +157,24 @@ async function runScraper() {
   const urls = [
     "https://www.sport-decouverte.com/vol-montgolfiere-chateaux-loire.html",
     "https://www.sport-decouverte.com/stage-pilotage-subaru-decouverte-rallye-dreux.html",
+    "https://www.sport-decouverte.com/simulateur-pilotage-avion-airbus-a320-paris-orly.html",
+    "https://www.sport-decouverte.com/saut-elastique-vosges.html",
+    "https://www.sport-decouverte.com/bapteme-paramoteur-proche-fontainebleau.html",
+    "https://www.sport-decouverte.com/initiation-pilotage-drone-proche-versailles.html",
+    "https://www.sport-decouverte.com/vol-initiation-planeur-meaux.html",
+    "https://www.sport-decouverte.com/initiation-pilotage-helicoptere-paris.html",
+    "https://www.sport-decouverte.com/randonnee-quad-paris.html",
+    "https://www.sport-decouverte.com/stage-pilotage-ferrari-f8-tributo-circuit-trappes.html",
+    "https://www.sport-decouverte.com/stage-pilotage-perfectionnement-moto-circuit-montlhery.html",
+    "https://www.sport-decouverte.com/bapteme-plongee-fosse-villeneuve-la-garenne.html",
+    "https://www.sport-decouverte.com/randonnee-jet-ski-proche-marseille.html",
+    "https://www.sport-decouverte.com/initiation-surf-indoor-proche-saint-etienne.html",
+    "https://www.sport-decouverte.com/sortie-mer-dauphins-lorient.html",
+    "https://www.sport-decouverte.com/jeux-nautiques-bouees-bananes-tractees-perpignan.html",
+    "https://www.sport-decouverte.com/randonnee-raquettes-vosges.html",
+    "https://www.sport-decouverte.com/simulateur-chute-libre-paris.html",
+    "https://www.sport-decouverte.com/stage-pilotage-drift-avec-cascadeur-professionnel-circuit-ferte-gaucher.html",
+    "https://www.sport-decouverte.com/randonnee-chiens-de-traineau-alpes-grenoble.html",
     "https://www.sport-decouverte.com/saut-parachute-montargis-tandem.html"
   ];
   for (const url of urls) {
