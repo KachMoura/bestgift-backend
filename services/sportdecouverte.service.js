@@ -48,25 +48,6 @@ function applySportDecouverteBusinessRules(products, data) {
         score += scoringConfig.ADVANCED_MATCH_BONUS;
       }
 
-
-       // Bonus note
-            const rating = parseFloat(product.rating) || 0;
-            if (rating >= 4) {
-              score += scoringConfig.RATING_BONUS;
-              console.log(`>>> [Note] ${product.title} : +${scoringConfig.RATING_BONUS}% (note ${rating})`);
-        }
-        // Bonus livraison rapide
-              const isFast =
-                (product.delivery_days_national && product.delivery_days_national < 3) ||
-                (product.delivery_days_international && product.delivery_days_international < 7);
-              if (isFast) {
-                let bonus = scoringConfig.FAST_DELIVERY_BONUS;
-                if (preferences.includes("fast_delivery")) bonus += scoringConfig.PREFERENCE_EXTRA_BONUS;
-                score += bonus;
-                console.log(`>>> [Livraison] ${product.title} : +${bonus}% (rapide${preferences.includes("fast_delivery") ? " + préférée" : ""})`);
-              }
-
-
       return {
         title: p.title,
         price,
