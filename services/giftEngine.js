@@ -3,14 +3,13 @@ const { searchRakutenProducts } = require('../services/rakuten.service');
 const { fetchDecathlonProducts } = require('../services/decathlon.service');
 const { searchEasyGiftProducts } = require('../services/easygiftCatalogService');
 const { searchFakeStoreProducts } = require('../services/fakestore.service');
-
 const { searchBookVillageProducts } = require('../services/bookvillage.service');
-const { searchSportDecouverteProducts } = require('../services/sportdecouverte.service'); // 👈 ajouté ici
+const { searchSportDecouverteProducts } = require('../services/sportdecouverte.service');
 
 const INTEREST_KEYWORDS = require('../data/interestKeywords');
 const GENDER_RULES = require('../data/genderRules');
 
-// Filtrage selon le genre
+// Fonction de filtrage selon le genre
 function matchGenderAge(title, gender) {
   const forbidden = GENDER_RULES[gender] || [];
   const lowerTitle = title.toLowerCase();
@@ -23,19 +22,39 @@ function isExcluded(title, excludedList) {
   return excludedList.some(item => lowerTitle.includes(item));
 }
 
-// Moteur principal de génération
+// Dictionnaire de correction de casse pour les marchands
+const MARCHAND_ALIASES = {
+  'bookvillage': 'BookVillage',
+  'sportdecouverte': 'SportDecouverte',
+  'easygift': 'EasyGift',
+  'ebay': 'eBay',
+  'rakuten': 'Rakuten',
+  'decathlon': 'Decathlon',
+  'fakestore': 'FakeStore',
+  'affilae': 'Affilae'
+};
+
+// Moteur principal
 async function generateSuggestions(data) {
   console.log(">>> [GiftEngine] Début génération pour :", data);
 
   const rawSuggestions = {};
   const interestKeywords = INTEREST_KEYWORDS[data.interests?.[0]] || [];
   const excluded = (data.excludedGifts || []).map(e => e.toLowerCase());
+
   const top = data.merchants?.top || [];
   const maybe = data.merchants?.maybe || [];
   const avoid = data.merchants?.avoid || [];
 
-  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore", "SportDecouverte", "BookVillage","Affilae"]; // 👈 ajouté Affilae ici
-  const requestedMerchants = [...top, ...maybe].filter(m => allMerchants.includes(m));
+  const allMerchants = [
+    "AliExpress", "eBay", "Rakuten", "Decathlon",
+    "EasyGift", "FakeStore", "SportDecouverte", "BookVillage", "Affilae"
+  ];
+
+  // Normalisation de la casse
+  const requestedMerchants = [...top, ...maybe]
+    .map(m => MARCHAND_ALIASES[m.toLowerCase()] || m)
+    .filter(m => allMerchants.includes(m));
 
   for (const merchant of requestedMerchants) {
     try {
@@ -53,8 +72,6 @@ async function generateSuggestions(data) {
           }));
           break;
 
-        
-
         case "eBay":
           const ebayResults = await searchEbayProducts(data);
           rawSuggestions[merchant] = ebayResults.filter(p =>
@@ -63,26 +80,7 @@ async function generateSuggestions(data) {
           );
           break;
 
-       /* 
-       case "AliExpress":
-          const mockAliProducts = [
-            { title: "Ballon de foot", price: 25, tags: ["sport"], merchant, image: "https://via.placeholder.com/150" },
-            { title: "Casque Bluetooth", price: 35, tags: ["tech", "musique"], merchant, image: "https://via.placeholder.com/150" },
-            { title: "Livre", price: 20, tags: ["book"], merchant, image: "https://via.placeholder.com/150" },
-            { title: "Plaid moelleux", price: 28, tags: ["maison"], merchant, image: "https://via.placeholder.com/150" },
-            { title: "Manette sans fil", price: 40, tags: ["game"], merchant, image: "https://via.placeholder.com/150" },
-            { title: "Montre bracelet homme", price: 39, tags: ["tech"], merchant, image: "https://via.placeholder.com/150" },
-            { title: "Peluche licorne enfant", price: 19, tags: ["game"], merchant, image: "https://via.placeholder.com/150" }
-          ];
-          rawSuggestions[merchant] = mockAliProducts.filter(product =>
-            interestKeywords.some(k => product.title.toLowerCase().includes(k)) &&
-            matchGenderAge(product.title, data.gender) &&
-            product.price <= data.budget &&
-            !isExcluded(product.title, excluded)
-          );
-          break;
-       
-       case "Rakuten":
+        case "Rakuten":
           rawSuggestions[merchant] = await searchRakutenProducts(data);
           break;
 
@@ -103,31 +101,20 @@ async function generateSuggestions(data) {
           );
           break;
 
-        case "Affilae": // 👈 nouveau bloc
-          const affilaeResults = await searchSportDecouverteProducts(data);
-          rawSuggestions[merchant] = affilaeResults.filter(p =>
+        case "BookVillage":
+          console.log(">>> [GiftEngine] Switch BookVillage atteint ✅");
+          const bookVillageResults = await searchBookVillageProducts(data);
+          rawSuggestions[merchant] = bookVillageResults;
+          break;
+
+        case "SportDecouverte":
+        case "Affilae": // même service utilisé
+          const sportResults = await searchSportDecouverteProducts(data);
+          rawSuggestions[merchant] = sportResults.filter(p =>
             matchGenderAge(p.title, data.gender) &&
             !isExcluded(p.title, excluded)
           );
-          break;*/
-
-
-          case "BookVillage":
-  console.log("[GiftEngine] Switch → BookVillage atteint");
-  const bookVillageResults = await searchBookVillageProducts(data);
-  rawSuggestions[merchant] = bookVillageResults;
-  break;
-
-
-
-    case "SportDecouverte":
-        const sportDecouverteResults = await searchSportDecouverteProducts(data);
-        rawSuggestions[merchant] = sportDecouverteResults.filter(p =>
-          matchGenderAge(p.title, data.gender) &&
-          !isExcluded(p.title, excluded)
-        );
-        break;
-
+          break;
       }
     } catch (err) {
       console.error(`>>> [GiftEngine] Erreur ${merchant} :`, err.message);
@@ -135,8 +122,9 @@ async function generateSuggestions(data) {
     }
   }
 
+  // Reconstituer les suggestions finales selon l’ordre de préférence
   const suggestions = {};
-  const order = [...top, ...maybe];
+  const order = [...top, ...maybe].map(m => MARCHAND_ALIASES[m.toLowerCase()] || m);
   for (const merchant of order) {
     suggestions[merchant] = rawSuggestions[merchant] || [];
   }
