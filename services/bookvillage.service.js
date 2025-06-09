@@ -5,30 +5,31 @@ const pool = new Pool({
   ssl: process.env.DATABASE_URL.includes("render.com") ? { rejectUnauthorized: false } : false,
 });
 
-// Fonction principale de recherche BookVillage
 async function searchBookVillageProducts(data) {
+  const interest = (data.interests?.[0] || "").toLowerCase();
+  console.log("[BookVillage] Profil reçu :", interest);
+
+  if (interest !== "lecteur") {
+    console.log("[BookVillage] Profil ≠ lecteur → on retourne un tableau vide");
+    return [];
+  }
+
   try {
-    const interest = (data.interests?.[0] || "").toLowerCase();
-
-    // 🔐 BookVillage ne s’affiche que pour le profil "lecteur"
-    if (interest !== "lecteur") {
-      console.log(`[BookVillage] Profil "${interest}" non autorisé → aucune suggestion`);
-      return [];
-    }
-
+    console.log("[BookVillage] Connexion à la base en cours...");
     const result = await pool.query("SELECT * FROM bookvillage_categories ORDER BY id");
+    console.log(`[BookVillage] ${result.rows.length} lignes trouvées en base`);
 
     const products = result.rows.map(row => ({
       title: row.title || "Titre inconnu",
       price: "—",
       image: row.image_url || "https://via.placeholder.com/150?text=BookVillage",
       link: row.affiliate_link,
-      merchant: "bookVillage",
+      merchant: "BookVillage",
       matchingScore: 100,
       source: "bookvillage"
     }));
 
-    console.log(`[BookVillage] ${products.length} produits chargés`);
+    console.log("[BookVillage] Produits formatés :", products);
     return products;
 
   } catch (err) {
