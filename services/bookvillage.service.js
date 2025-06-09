@@ -25,7 +25,7 @@ async function searchBookVillageProducts(data) {
       image: row.image_url || "https://via.placeholder.com/150?text=BookVillage",
       link: row.affiliate_link,
       merchant: "BookVillage",
-      matchingScore: 100,
+      matchingScore: 80,
       source: "BookVillage"
     }));
 
