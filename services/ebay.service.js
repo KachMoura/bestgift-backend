@@ -12,7 +12,7 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   game: ["console", "jeux vidéo", "playstation", "figurine", "gaming"],
   sport: ["fitness", "course", "basquette", "sac à dos sport", "montre cardio"],
   music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
-  maison: ["diffuseur", "vase", "tapis déco", "lampe de chevet", "Coussin décoratif"],
+  maison: ["diffuseur d'huiles essentielles", "Miroir", "bougie décorative", "lampe de chevet", "Coussin décoratif"],
   ecolo: ["vase", "plantes", "écologique", "jardin", "gourde inox"],
   jewelry: ["bracelet", "necklace", "earrings", "ring", "fashion jewelry"]
 };
