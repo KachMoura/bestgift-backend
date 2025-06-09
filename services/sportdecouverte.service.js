@@ -22,7 +22,7 @@ async function fetchSportDecouverteRawProducts() {
   }
 }
 
-// Analyse des produits
+// Application des règles de filtrage et de scoring
 function applySportDecouverteBusinessRules(products, data) {
   const interest = (data.interests?.[0] || "").toLowerCase();
   const preferences = Array.isArray(data.preferences) ? data.preferences : [];
@@ -48,7 +48,7 @@ function applySportDecouverteBusinessRules(products, data) {
       // Scoring initial
       let score = scoringConfig.BASE_SCORE;
 
-      // Matching avancé profil
+      // Mots-clés du profil
       const foundKeywords = profileKeywords.filter(k => fullText.includes(k));
       if (foundKeywords.length >= 5) {
         score += scoringConfig.ADVANCED_MATCH_BONUS;
@@ -59,7 +59,7 @@ function applySportDecouverteBusinessRules(products, data) {
         score += scoringConfig.RATING_BONUS;
       }
 
-      // Bonus promo
+      // Bonus promotion
       if (p.is_promo === true) {
         score += scoringConfig.PROMO_BONUS;
         if (preferences.includes("promo")) {
@@ -68,7 +68,8 @@ function applySportDecouverteBusinessRules(products, data) {
       }
 
       // Livraison rapide
-      const fastDelivery = (p.delivery_days_national && p.delivery_days_national < 3) || (p.delivery_days_international && p.delivery_days_international < 7);
+      const fastDelivery = (p.delivery_days_national && p.delivery_days_national < 3) ||
+                           (p.delivery_days_international && p.delivery_days_international < 7);
       if (fastDelivery) {
         score += scoringConfig.FAST_DELIVERY_BONUS;
         if (preferences.includes("fast_delivery")) {
@@ -103,9 +104,17 @@ function applySportDecouverteBusinessRules(products, data) {
     .sort((a, b) => b.matchingScore - a.matchingScore);
 }
 
-// Fonction principale exportée
+// Fonction principale avec filtrage sur le profil
 async function searchSportDecouverteProducts(data) {
   try {
+    const allowedProfiles = ["sport", "game"];
+    const interest = (data.interests?.[0] || "").toLowerCase();
+
+    if (!allowedProfiles.includes(interest)) {
+      console.log(`[SportDécouverte] Profil "${interest}" non autorisé → aucune suggestion`);
+      return [];
+    }
+
     const raw = await fetchSportDecouverteRawProducts();
     const filtered = applySportDecouverteBusinessRules(raw, data);
     console.log(`[SportDécouverte] ${filtered.length} produits retenus après filtrage`);
