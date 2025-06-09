@@ -51,7 +51,18 @@ async function generateSuggestions(data) {
           }));
           break;
 
-        case "AliExpress":
+        
+
+        case "eBay":
+          const ebayResults = await searchEbayProducts(data);
+          rawSuggestions[merchant] = ebayResults.filter(p =>
+            matchGenderAge(p.title, data.gender) &&
+            !isExcluded(p.title, excluded)
+          );
+          break;
+
+       /* 
+       case "AliExpress":
           const mockAliProducts = [
             { title: "Ballon de foot", price: 25, tags: ["sport"], merchant, image: "https://via.placeholder.com/150" },
             { title: "Casque Bluetooth", price: 35, tags: ["tech", "musique"], merchant, image: "https://via.placeholder.com/150" },
@@ -68,16 +79,8 @@ async function generateSuggestions(data) {
             !isExcluded(product.title, excluded)
           );
           break;
-
-        case "eBay":
-          const ebayResults = await searchEbayProducts(data);
-          rawSuggestions[merchant] = ebayResults.filter(p =>
-            matchGenderAge(p.title, data.gender) &&
-            !isExcluded(p.title, excluded)
-          );
-          break;
-
-        case "Rakuten":
+       
+       case "Rakuten":
           rawSuggestions[merchant] = await searchRakutenProducts(data);
           break;
 
@@ -104,7 +107,7 @@ async function generateSuggestions(data) {
             matchGenderAge(p.title, data.gender) &&
             !isExcluded(p.title, excluded)
           );
-          break;
+          break;*/
 
 
     case "SportDecouverte":
