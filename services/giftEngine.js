@@ -112,7 +112,7 @@ async function generateSuggestions(data) {
           break;*/
 
 
-          case "BookVillage":
+          case "bookVillage":
           const bookVillageResults = await searchBookVillageProducts(data);
           rawSuggestions[merchant] = bookVillageResults;
           break;
