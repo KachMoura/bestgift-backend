@@ -21,7 +21,7 @@ async function searchBookVillageProducts(data) {
 
     const products = result.rows.map(row => ({
       title: row.title || "Titre inconnu",
-      price: "—",
+      price: "A partir de 5€",
       image: row.image_url || "https://via.placeholder.com/150?text=BookVillage",
       link: row.affiliate_link,
       merchant: "BookVillage",
