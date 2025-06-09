@@ -113,9 +113,10 @@ async function generateSuggestions(data) {
 
 
           case "BookVillage":
-          const bookVillageResults = await searchBookVillageProducts(data);
-          rawSuggestions[merchant] = bookVillageResults;
-          break;
+  console.log("[GiftEngine] Switch → BookVillage atteint");
+  const bookVillageResults = await searchBookVillageProducts(data);
+  rawSuggestions[merchant] = bookVillageResults;
+  break;
 
 
 
