@@ -8,7 +8,7 @@ const { matchGenderAge } = require('../data/genderRules');
 const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"],
   tech: ["gadget", "smartwatch", "Tablette", "airpods", "drone 4k"],
-  book: ["Manga", "BD", "roman", "livre jeunesse", "livre audio"],
+  book: ["Manga", "BD", "Roman", "fiction", "livre audio"],
   game: ["console", "jeux vidéo", "playstation", "figurine", "gaming"],
   sport: ["fitness", "course", "basquette", "sac à dos sport", "montre cardio"],
   music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],

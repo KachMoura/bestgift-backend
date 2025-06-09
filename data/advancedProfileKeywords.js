@@ -68,7 +68,7 @@ module.exports = {
 
     book: [
       // FR - Général
-      "livre", "roman", "lecture", "bibliothèque", "auteur", "livre de poche", "livre jeunesse", "saga",
+      "livre", "roman", "BD", "Manga", "lecture", "bibliothèque", "auteur", "livre de poche", "livre jeunesse", "saga",
     
       // Genres littéraires FR
       "thriller", "fiction", "non-fiction", "autobiographie", "science-fiction", "fantasy", "poésie", "conte", "policier", "classique",

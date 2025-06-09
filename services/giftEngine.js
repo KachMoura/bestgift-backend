@@ -3,6 +3,8 @@ const { searchRakutenProducts } = require('../services/rakuten.service');
 const { fetchDecathlonProducts } = require('../services/decathlon.service');
 const { searchEasyGiftProducts } = require('../services/easygiftCatalogService');
 const { searchFakeStoreProducts } = require('../services/fakestore.service');
+
+const { searchBookVillageProducts } = require('../services/bookvillage.service');
 const { searchSportDecouverteProducts } = require('../services/sportdecouverte.service'); // 👈 ajouté ici
 
 const INTEREST_KEYWORDS = require('../data/interestKeywords');
@@ -32,7 +34,7 @@ async function generateSuggestions(data) {
   const maybe = data.merchants?.maybe || [];
   const avoid = data.merchants?.avoid || [];
 
-  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore", "SportDecouverte", "Affilae"]; // 👈 ajouté Affilae ici
+  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore", "SportDecouverte", "bookVillage","Affilae"]; // 👈 ajouté Affilae ici
   const requestedMerchants = [...top, ...maybe].filter(m => allMerchants.includes(m));
 
   for (const merchant of requestedMerchants) {
@@ -110,6 +112,13 @@ async function generateSuggestions(data) {
           break;*/
 
 
+          case "BookVillage":
+          const bookVillageResults = await searchBookVillageProducts(data);
+          rawSuggestions[merchant] = bookVillageResults;
+          break;
+
+
+          
     case "SportDecouverte":
         const sportDecouverteResults = await searchSportDecouverteProducts(data);
         rawSuggestions[merchant] = sportDecouverteResults.filter(p =>
