@@ -10,7 +10,7 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   tech: ["gadget", "smartwatch", "Tablette", "airpods", "drone 4k"],
   book: ["fiction", "bande dessinée", "roman", "livre jeunesse", "livre audio"],
   game: ["console", "jeux vidéo", "playstation", "figurine", "gaming"],
-  sport: ["fitness", "course", "chaussures de sport", "sac à dos sport", "montre cardio"],
+  sport: ["fitness", "course", "basquette", "sac à dos sport", "montre cardio"],
   music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
   maison: ["diffuseur", "vase", "tapis déco", "lampe de chevet", "Coussin décoratif"],
   ecolo: ["vase", "plantes", "écologique", "jardin", "gourde inox"],

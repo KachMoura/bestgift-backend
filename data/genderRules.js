@@ -9,7 +9,7 @@ const PRODUCT_FILTER_RULES = {
   ],
   Enfant: [
     "montre", "barbe", "haltères","biere", "sexe", "makeup", "bijou", "parfum", "vin", "couteau",
-    "alcool", "adultes", "maquillage", "musculation", "Maquillage", "Rasoir", "Anti age","capillaires", "perfume","anti ride"
+    "alcool", "adultes", "maquillage", "musculation", "fitness","Maquillage", "Rasoir", "Anti age","capillaires", "perfume","anti ride"
   ]
 };
 
