@@ -34,7 +34,7 @@ async function generateSuggestions(data) {
   const maybe = data.merchants?.maybe || [];
   const avoid = data.merchants?.avoid || [];
 
-  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore", "SportDecouverte", "bookvillage","Affilae"]; // 👈 ajouté Affilae ici
+  const allMerchants = ["AliExpress", "eBay", "Rakuten", "Decathlon", "EasyGift", "FakeStore", "SportDecouverte", "BookVillage","Affilae"]; // 👈 ajouté Affilae ici
   const requestedMerchants = [...top, ...maybe].filter(m => allMerchants.includes(m));
 
   for (const merchant of requestedMerchants) {
@@ -112,7 +112,7 @@ async function generateSuggestions(data) {
           break;*/
 
 
-          case "bookVillage":
+          case "BookVillage":
           const bookVillageResults = await searchBookVillageProducts(data);
           rawSuggestions[merchant] = bookVillageResults;
           break;

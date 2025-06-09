@@ -26,7 +26,7 @@ async function searchBookVillageProducts(data) {
       link: row.affiliate_link,
       merchant: "BookVillage",
       matchingScore: 100,
-      source: "bookvillage"
+      source: "BookVillage"
     }));
 
     console.log("[BookVillage] Produits formatés :", products);
