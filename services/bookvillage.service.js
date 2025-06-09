@@ -9,7 +9,7 @@ async function searchBookVillageProducts(data) {
   const interest = (data.interests?.[0] || "").toLowerCase();
   console.log("[BookVillage] Profil reçu :", interest);
 
-  if (interest !== "lecteur") {
+  if (interest !== "book") {
     console.log("[BookVillage] Profil ≠ lecteur → on retourne un tableau vide");
     return [];
   }
