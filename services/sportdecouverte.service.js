@@ -10,7 +10,7 @@ const pool = new Pool({
   ssl: process.env.DATABASE_URL.includes("render.com") ? { rejectUnauthorized: false } : false,
 });
 
-// Récupération brute des produits depuis la base
+// Chargement brut des produits
 async function fetchSportDecouverteRawProducts() {
   try {
     const result = await pool.query('SELECT * FROM sportdecouverte_products');
@@ -22,7 +22,7 @@ async function fetchSportDecouverteRawProducts() {
   }
 }
 
-// Application des règles métier sur les produits
+// Analyse des produits
 function applySportDecouverteBusinessRules(products, data) {
   const interest = (data.interests?.[0] || "").toLowerCase();
   const preferences = Array.isArray(data.preferences) ? data.preferences : [];
@@ -35,17 +35,58 @@ function applySportDecouverteBusinessRules(products, data) {
   return products
     .map(p => {
       const title = (p.title || "").toLowerCase();
+      const description = (p.description || "").toLowerCase();
       const price = parseFloat(p.price) || 0;
+      const rating = parseFloat(p.rating) || 0;
+      const fullText = `${title} ${description}`;
 
+      // Filtres de base
       if (price < minBudget || price > maxBudget) return null;
       if (!matchGenderAge(title, gender)) return null;
       if (excluded.some(e => title.includes(e))) return null;
 
+      // Scoring initial
       let score = scoringConfig.BASE_SCORE;
 
-      const foundKeywords = profileKeywords.filter(k => title.includes(k));
-      if (foundKeywords.length >= 1) {
+      // Matching avancé profil
+      const foundKeywords = profileKeywords.filter(k => fullText.includes(k));
+      if (foundKeywords.length >= 5) {
         score += scoringConfig.ADVANCED_MATCH_BONUS;
+      }
+
+      // Bonus note
+      if (rating >= 4) {
+        score += scoringConfig.RATING_BONUS;
+      }
+
+      // Bonus promo
+      if (p.is_promo === true) {
+        score += scoringConfig.PROMO_BONUS;
+        if (preferences.includes("promo")) {
+          score += scoringConfig.PREFERENCE_EXTRA_BONUS;
+        }
+      }
+
+      // Livraison rapide
+      const fastDelivery = (p.delivery_days_national && p.delivery_days_national < 3) || (p.delivery_days_international && p.delivery_days_international < 7);
+      if (fastDelivery) {
+        score += scoringConfig.FAST_DELIVERY_BONUS;
+        if (preferences.includes("fast_delivery")) {
+          score += scoringConfig.PREFERENCE_EXTRA_BONUS;
+        }
+      }
+
+      // Compacité
+      const weight = parseFloat(p.product_weight_kg) || 0;
+      const h = parseFloat(p.product_height_cm) || 0;
+      const w = parseFloat(p.product_width_cm) || 0;
+      const d = parseFloat(p.product_depth_cm) || 0;
+      const isCompact = weight <= 5 && h <= 50 && w <= 50 && d <= 50;
+      if (isCompact) {
+        score += scoringConfig.UNIVERSAL_SIZE_BONUS;
+        if (preferences.includes("compact")) {
+          score += scoringConfig.PREFERENCE_EXTRA_BONUS;
+        }
       }
 
       return {
@@ -62,11 +103,12 @@ function applySportDecouverteBusinessRules(products, data) {
     .sort((a, b) => b.matchingScore - a.matchingScore);
 }
 
-// Fonction principale appelée depuis le routeur
+// Fonction principale exportée
 async function searchSportDecouverteProducts(data) {
   try {
     const raw = await fetchSportDecouverteRawProducts();
     const filtered = applySportDecouverteBusinessRules(raw, data);
+    console.log(`[SportDécouverte] ${filtered.length} produits retenus après filtrage`);
     return filtered;
   } catch (err) {
     console.error("[SportDécouverte] Erreur dans searchSportDecouverteProducts :", err.message);
