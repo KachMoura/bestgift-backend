@@ -93,6 +93,11 @@ module.exports = {
       "vr", "réalité virtuelle", "jeu de rôle", "arcade", "Drive", "Portable", "joystick", "multijoueur"
     ],
 
+    voyageur: [
+      "voyage", "aeorport", "avion", "valise", "évasion", "montagne", "compagne", "chargeur",
+      "chapeau", "Soleil", "Drive", "Portable", "aventure", "surf"
+    ],
+
     beauty: [
       "makeup", "cosmetics", "beauty", "beauty set", "beauty gift", "skincare",
       "serum", "anti-age", "moisturizer", "cream", "crème", "soin", "soin visage", "soin peau",
