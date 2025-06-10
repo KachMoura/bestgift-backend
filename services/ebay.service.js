@@ -6,16 +6,16 @@ const ADVANCED_KEYWORDS = require('../data/advancedProfileKeywords');
 const { matchGenderAge } = require('../data/genderRules');
 
 const EBAY_KEYWORDS_BY_PROFILE = {
-  beauty: ["makeup", "perfume", "skincare", "beauty gift set", "haircare"],
+  beauty: ["makeup", "perfume", "Set-Trousse-Manucure", "beauty gift set", "haircare"],
   tech: ["bluetooth", "smartwatch", "Tablette", "casque", "drone 4k"],
   book: ["Manga", "BD", "Roman policier", "Romance", "livre audio"],
   game: ["console", "jeux vidéo", "playstation", "Manettes", "gaming"],
   sport: ["Randonnée", "course à pied", "Chaussures de sport", "sac à dos sport", "montre cardio"],
   music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
   maison: ["diffuseur d'huiles essentielles", "Miroir", "bougie décorative", "lampe de chevet", "Coussin décoratif"],
-  ecolo: ["vase fleur", "plantes", "écologique", "Jardinière", "gourde inox"],
+  ecolo: ["vase fleur", "Arrosoir", "écologique", "Jardinière", "gourde inox"],
   jewelry: ["bracelet", "necklace", "earrings", "ring", "fashion jewelry"],
-  voyageur: ["traducteur de langues portable", "valise", "Machine à Café Portable", "casque anti bruit ", "Sac à dos"]
+  voyageur: ["traducteur de langues portable", "valise", "Machine à Café Portable", "casque anti bruit ", "Mini Fer à repasser "]
 };
 
 const EBAY_BROWSE_ENDPOINT = "https://api.ebay.com/buy/browse/v1/item_summary/search";
