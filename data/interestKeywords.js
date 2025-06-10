@@ -5,6 +5,8 @@ module.exports = {
     book: ["livre", "roman", "lecture", "auteur", "bibliothèque"],
     maison: ["décoration", "coussin", "plaid", "bougie", "cocooning"],
     game: ["jeu", "console", "manette", "gaming", "jeux vidéo"],
-    music: ["musique", "enceinte", "casque", "guitare", "écouteurs"]
+    music: ["musique", "enceinte", "casque", "guitare", "écouteurs"],
+    voyageur: ["voyage", "avion", "valise", "train", "aventure"],
+    
    
   };
