@@ -15,7 +15,7 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   maison: ["diffuseur d'huiles essentielles", "Miroir", "bougie décorative", "lampe de chevet", "Coussin décoratif"],
   ecolo: ["vase", "plantes", "écologique", "jardin", "gourde inox"],
   jewelry: ["bracelet", "necklace", "earrings", "ring", "fashion jewelry"],
-  voyageur: ["traducteur de langues portable", "valise", "Machine à Café Portable", "aeroport", "camping"]
+  voyageur: ["traducteur de langues portable", "valise", "Machine à Café Portable", "casque anti bruit ", "camping"]
 };
 
 const EBAY_BROWSE_ENDPOINT = "https://api.ebay.com/buy/browse/v1/item_summary/search";
