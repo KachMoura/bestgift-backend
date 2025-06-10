@@ -8,9 +8,9 @@ const { matchGenderAge } = require('../data/genderRules');
 const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "Set-Trousse-Manucure", "beauty gift set", "haircare"],
   tech: ["bluetooth", "smartwatch", "Tablette", "casque", "drone 4k"],
-  book: ["Manga", "BD", "Roman policier", "Romance", "livre audio"],
+  book: ["Serre-livres", "Liseuse rechargeable à clipser", "Valet de lecture en bois", "Lampe de lecture", "livre audio"],
   game: ["console", "jeux vidéo", "playstation", "Manettes", "gaming"],
-  sport: ["Randonnée", "course à pied", "Chaussures de sport", "sac à dos sport", "montre cardio"],
+  sport: ["Randonnée", "course à pied", "Casque de sport", "sac à dos sport", "montre cardio"],
   music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
   maison: ["diffuseur d'huiles essentielles", "Miroir", "bougie décorative", "lampe de chevet", "Coussin décoratif"],
   ecolo: ["vase fleur", "Arrosoir", "écologique", "Jardinière", "gourde inox"],
