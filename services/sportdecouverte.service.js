@@ -107,7 +107,7 @@ function applySportDecouverteBusinessRules(products, data) {
 // Fonction principale avec filtrage sur le profil
 async function searchSportDecouverteProducts(data) {
   try {
-    const allowedProfiles = ["sport", "game"];
+    const allowedProfiles = ["sport", "game", "voyageur"];
     const interest = (data.interests?.[0] || "").toLowerCase();
 
     if (!allowedProfiles.includes(interest)) {
