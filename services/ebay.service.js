@@ -13,9 +13,9 @@ const EBAY_KEYWORDS_BY_PROFILE = {
   sport: ["Randonnée", "course à pied", "Chaussures de sport", "sac à dos sport", "montre cardio"],
   music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
   maison: ["diffuseur d'huiles essentielles", "Miroir", "bougie décorative", "lampe de chevet", "Coussin décoratif"],
-  ecolo: ["vase", "plantes", "écologique", "jardin", "gourde inox"],
+  ecolo: ["vase fleur", "plantes", "écologique", "Jardinière", "gourde inox"],
   jewelry: ["bracelet", "necklace", "earrings", "ring", "fashion jewelry"],
-  voyageur: ["traducteur de langues portable", "valise", "Machine à Café Portable", "casque anti bruit ", "camping"]
+  voyageur: ["traducteur de langues portable", "valise", "Machine à Café Portable", "casque anti bruit ", "Sac à dos"]
 };
 
 const EBAY_BROWSE_ENDPOINT = "https://api.ebay.com/buy/browse/v1/item_summary/search";
