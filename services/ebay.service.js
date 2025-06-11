@@ -7,15 +7,15 @@ const { matchGenderAge } = require('../data/genderRules');
 
 const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "Set-Trousse-Manucure", "beauty gift set", "haircare"],
-  tech: ["bluetooth", "smartwatch", "Tablette", "casque", "drone 4k"],
-  book: ["Serre-livres", "Liseuse rechargeable à clipser", "Valet de lecture en bois", "Lampe de lecture", "livre audio"],
-  game: ["console", "jeux vidéo", "playstation", "Manettes", "gaming"],
-  sport: ["Randonnée", "course à pied", "Casque de sport", "sac à dos sport", "montre cardio"],
+  tech: ["enceinte bluetooth", "smartwatch", "Tablette", "casque sans fil", "drone 4k"],   //autres mots clé pour tech : Chargeur sans fil; téléscope; platine vinyle; Écouteurs de Traduction; horloge
+  book: ["Serre-livres", "Liseuse rechargeable à clipser", "Lampe de bureau", "Lampe de lecture", "Porte-Livre Réglable"],
+  game: ["console", "jeux vidéo", "playstation", "Manettes", "Casque sans fil"],
+  sport: ["Gourde pliable", "course à pied", "Casque de sport", "sac à dos sport", "montre cardio"],
   music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
   maison: ["diffuseur d'huiles essentielles", "Miroir", "bougie décorative", "lampe de chevet", "Coussin décoratif"],
-  ecolo: ["vase fleur", "Arrosoir", "écologique", "Jardinière", "gourde inox"],
+  ecolo: ["vase fleur", "Sac Four-tout Artisanal", "écologique", "Jardinière", "gourde inox"],
   jewelry: ["bracelet", "necklace", "earrings", "ring", "fashion jewelry"],
-  voyageur: ["traducteur de langues portable", "valise", "Machine à Café Portable", "casque anti bruit ", "Mini Fer à repasser "]
+  voyageur: ["traducteur de langues portable", "Écouteurs de Traduction", "Machine à Café Portable", "casque anti bruit ", "Mini Fer à repasser "]
 };
 
 const EBAY_BROWSE_ENDPOINT = "https://api.ebay.com/buy/browse/v1/item_summary/search";
