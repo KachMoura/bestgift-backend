@@ -7,7 +7,7 @@ const { matchGenderAge } = require('../data/genderRules');
 
 const EBAY_KEYWORDS_BY_PROFILE = {
   beauty: ["makeup", "perfume", "Set-Trousse-Manucure", "beauty gift set", "haircare"],
-  tech: ["bluetooth", "smartwatch", "Tablette", "casque sans fil", "drone 4k"],   //autres mots clé pour tech : Chargeur sans fil; téléscope; platine vinyle; Écouteurs de Traduction; horloge
+  tech: ["bluetooth", "smartwatch", "Tablette", "casque sans fil", "drone 4k", "Chargeur sans fil", "téléscope", "platine vinyle", "Écouteurs de Traduction", "horloge"],
   book: ["Serre-livres", "Liseuse rechargeable à clipser", "Lampe de bureau", "Lampe de lecture", "Porte-Livre Réglable"],
   game: ["console", "jeux vidéo", "playstation", "Manettes", "Casque sans fil"],
   sport: ["Gourde pliable", "course à pied", "Casque de sport", "sac à dos sport", "montre cardio"],
@@ -21,16 +21,20 @@ const EBAY_KEYWORDS_BY_PROFILE = {
 const EBAY_BROWSE_ENDPOINT = "https://api.ebay.com/buy/browse/v1/item_summary/search";
 const EBAY_CAMPAIGN_ID = process.env.EPN_CAMPAIGN_ID;
 
+// 🔀 Tirage aléatoire de mots-clés
+function getRandomKeywords(keywords, count = 4) {
+  const shuffled = [...keywords].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
 async function fetchEbayRawProducts(keyword, minPrice, maxPrice) {
   const params = new URLSearchParams({
     q: keyword,
     limit: '20',
     filter: `price:[${minPrice}..${maxPrice}]`
   });
-
   const url = `${EBAY_BROWSE_ENDPOINT}?${params.toString()}`;
   const token = await getValidToken();
-
   console.log(`>>> [eBayService] Appel API : ${url}`);
 
   try {
@@ -41,17 +45,14 @@ async function fetchEbayRawProducts(keyword, minPrice, maxPrice) {
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_FR'
       }
     });
-
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`>>> [eBayService] ERREUR HTTP ${res.status} : ${errorText}`);
       return [];
     }
-
     const data = await res.json();
     console.log(`>>> [eBayService] ${data.itemSummaries?.length || 0} produits bruts reçus pour "${keyword}"`);
     return data.itemSummaries || [];
-
   } catch (err) {
     console.error(">>> [eBayService] Erreur réseau :", err.message);
     return [];
@@ -137,23 +138,31 @@ async function searchEbayProducts(data) {
     const interest = (data.interests?.[0] || "").toLowerCase();
     const maxPrice = data.budget || 99999;
     const minPrice = data.minBudget || 0;
-    const keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
+    let keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
 
     console.log(`>>> [eBayService] Recherche pour "${interest}" avec min : ${minPrice}€, max : ${maxPrice}€`);
 
+    // 🎯 Si profil TECH → sélection aléatoire de 4 mots-clés
+    if (interest === "tech") {
+      keywordsList = getRandomKeywords(keywordsList, 4);
+      console.log(">>> [eBayService] Mots-clés TECH tirés au hasard :", keywordsList);
+    }
+
     const allProducts = [];
 
-    for (const kw of keywordsList) {
-      const result = await fetchEbayRawProducts(kw, minPrice, maxPrice);
-      allProducts.push(...result);
-    }
+    // 🔁 Appels API en parallèle
+    await Promise.all(
+      keywordsList.map(async (kw) => {
+        const result = await fetchEbayRawProducts(kw, minPrice, maxPrice);
+        allProducts.push(...result);
+      })
+    );
 
     const filtered = applyEbayBusinessRules(allProducts, data);
     filtered.sort((a, b) => b.matchingScore - a.matchingScore);
 
     console.log(`>>> [eBayService] ${filtered.length} produits sélectionnés pour "${interest}"`);
     return filtered;
-
   } catch (err) {
     console.error(">>> [eBayService] Erreur searchEbayProducts :", err.message);
     return [];
