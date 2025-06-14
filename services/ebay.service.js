@@ -5,23 +5,53 @@ const scoringConfig = require('../data/scoringConfig');
 const ADVANCED_KEYWORDS = require('../data/advancedProfileKeywords');
 const { matchGenderAge } = require('../data/genderRules');
 
+// ✅ Mots-clés enrichis (jusqu’à 12 par profil)
 const EBAY_KEYWORDS_BY_PROFILE = {
-  beauty: ["makeup", "perfume", "Set-Trousse-Manucure", "beauty gift set", "haircare"],
-  tech: ["bluetooth", "smartwatch", "Tablette", "casque sans fil", "drone 4k", "Chargeur sans fil", "téléscope", "platine vinyle", "Écouteurs de Traduction", "horloge"],
-  book: ["Serre-livres", "Liseuse rechargeable à clipser", "Lampe de bureau", "Lampe de lecture", "Porte-Livre Réglable"],
-  game: ["console", "jeux vidéo", "playstation", "Manettes", "Casque sans fil"],
-  sport: ["Gourde pliable", "course à pied", "Casque de sport", "sac à dos sport", "montre cardio"],
-  music: ["écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument"],
-  maison: ["diffuseur d'huiles essentielles", "Miroir déco", "bougie décorative", "lampe de chevet", "Coussin décoratif"],
-  ecolo: ["vase fleur", "Sac Artisanal", "écologique", "Jardinière", "gourde inox"],
-  jewelry: ["bracelet", "necklace", "earrings", "ring", "fashion jewelry"],
-  voyageur: ["Machine à Café Portable", "Mini Fer à repasser ", "valise de voyage", "Écouteurs de Traduction", "casque anti bruit "]
+  beauty: [
+    "makeup", "perfume", "Set-Trousse-Manucure", "beauty gift set", "haircare",
+    "palette maquillage", "sèche-cheveux", "crème visage", "soin peau", "épilateur", "masque beauté", "rouge à lèvres"
+  ],
+  tech: [
+    "bluetooth", "smartwatch", "Tablette", "casque sans fil", "drone 4k",
+    "Chargeur sans fil", "téléscope", "platine vinyle", "Écouteurs de Traduction", "horloge", "station recharge", "mini projecteur"
+  ],
+  book: [
+    "Serre-livres", "Liseuse rechargeable", "Lampe de bureau", "Lampe de lecture", "Porte-Livre Réglable",
+    "roman bestseller", "livre illustré", "livre développement personnel", "BD adulte", "journal intime", "audiobook", "calendrier littéraire"
+  ],
+  game: [
+    "console", "jeux vidéo", "playstation", "Manettes", "Casque sans fil",
+    "figurine gaming", "tapis gamer", "clé Steam", "volant simulateur", "chaise gamer", "lunettes gaming", "set VR"
+  ],
+  sport: [
+    "Gourde pliable", "course à pied", "Casque de sport", "sac à dos sport", "montre cardio",
+    "haltères", "tapis de yoga", "balle de massage", "gants de muscu", "vélo d’appartement", "bande résistance", "chaussures running"
+  ],
+  music: [
+    "écouteurs", "enceinte bluetooth", "casque audio", "vinyle", "instrument",
+    "ampli guitare", "synthétiseur", "support micro", "piano numérique", "métronome", "partition musicale", "câble jack audio"
+  ],
+  maison: [
+    "diffuseur d'huiles essentielles", "Miroir déco", "bougie décorative", "lampe de chevet", "Coussin décoratif",
+    "plaid doux", "cadre mural", "panier rangement", "plante artificielle", "tableau abstrait", "rideaux design", "veilleuse LED"
+  ],
+  ecolo: [
+    "vase fleur", "Sac Artisanal", "écologique", "Jardinière", "gourde inox",
+    "pailles bambou", "savon solide", "brosse compostable", "lampe solaire", "tote bag", "carnet recyclé", "bouteille filtrante"
+  ],
+  jewelry: [
+    "bracelet", "necklace", "earrings", "ring", "fashion jewelry",
+    "bijou personnalisé", "pendentif initiale", "collier perle", "bracelet cuir", "boîte à bijoux", "bague acier", "boucles d’oreilles"
+  ],
+  voyageur: [
+    "Machine à Café Portable", "Mini Fer à repasser", "valise de voyage", "Écouteurs de Traduction", "casque anti bruit",
+    "adaptateur universel", "oreiller cervical", "kit de voyage avion", "sac de voyage pliable", "mini trousse toilette", "pèse bagage", "chargeur universel"
+  ]
 };
 
 const EBAY_BROWSE_ENDPOINT = "https://api.ebay.com/buy/browse/v1/item_summary/search";
 const EBAY_CAMPAIGN_ID = process.env.EPN_CAMPAIGN_ID;
 
-// 🔀 Tirage aléatoire de mots-clés
 function getRandomKeywords(keywords, count = 4) {
   const shuffled = [...keywords].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
@@ -140,17 +170,13 @@ async function searchEbayProducts(data) {
     const minPrice = data.minBudget || 0;
     let keywordsList = EBAY_KEYWORDS_BY_PROFILE[interest] || [interest];
 
-    console.log(`>>> [eBayService] Recherche pour "${interest}" avec min : ${minPrice}€, max : ${maxPrice}€`);
-
-    // 🎯 Si profil TECH → sélection aléatoire de 4 mots-clés
-    if (interest === "tech") {
+    // 🎯 Aléatoire si +4 mots-clés
+    if (keywordsList.length > 4) {
       keywordsList = getRandomKeywords(keywordsList, 4);
-      console.log(">>> [eBayService] Mots-clés TECH tirés au hasard :", keywordsList);
+      console.log(`>>> [eBayService] Mots-clés "${interest}" tirés au hasard :`, keywordsList);
     }
 
     const allProducts = [];
-
-    // 🔁 Appels API en parallèle
     await Promise.all(
       keywordsList.map(async (kw) => {
         const result = await fetchEbayRawProducts(kw, minPrice, maxPrice);
