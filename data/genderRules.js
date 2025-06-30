@@ -8,8 +8,8 @@ const PRODUCT_FILTER_RULES = {
     "plaid rose", "manucure", "pedicure", "palette", "lipstick", "rouge à lèvres", "women", "girl", "femme", "vernis", "blush"
   ],
   Enfant: [
-    "montre", "barbe", "haltères","biere", "sexe", "makeup", "bijou", "parfum", "vin", "couteau",
-    "alcool", "adultes", "maquillage", "musculation", "fitness","Maquillage", "Rasoir", "Anti age","capillaires", "perfume","anti ride"
+    "montre", "barbe", "bijou", "haltères","biere", "sexe", "makeup", "bijou","women", "parfum", "vin", "couteau",
+    "alcool", "adultes","makeup", "vernis", "masque", "beauté","maquillage", "rouge à lèvres", "musculation", "fitness","Maquillage", "Rasoir", "Anti age","capillaires", "perfume","anti ride"
   ]
 };
 
