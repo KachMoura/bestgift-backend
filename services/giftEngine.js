@@ -11,10 +11,9 @@ const GENDER_RULES = require('../data/genderRules');
 
 // Fonction de filtrage selon le genre
 function matchGenderAge(title, gender) {
-  if (gender === 'Mixte') return false; // aucun filtrage
   const forbidden = GENDER_RULES[gender] || [];
   const lowerTitle = title.toLowerCase();
-  return forbidden.some(keyword => lowerTitle.includes(keyword));
+  return !forbidden.some(keyword => lowerTitle.includes(keyword));
 }
 
 // Vérifie si le produit est déjà offert
